@@ -180,19 +180,6 @@ def update_line_graph(datePicked, selectedLocation, selectedType):
         else:
             prev_location = selectedLocation
 
-    # if selectedLocation:
-    #     data_confirmed = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[selectedLocation]))
-    #     data_recovered = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[selectedLocation],
-    #                                                              status=StatusType.RECOVERED))
-    #     data_deaths = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[selectedLocation],
-    #                                                           status=StatusType.DEATHS))
-    #
-    # else:
-    #     data_confirmed = remove_duplicated(client.get_by_country(country=client.Countries.POLAND))
-    #     data_recovered = remove_duplicated(
-    #         client.get_by_country(country=client.Countries.POLAND, status=StatusType.RECOVERED))
-    #     data_deaths = remove_duplicated(
-    #         client.get_by_country(country=client.Countries.POLAND, status=StatusType.DEATHS))
     data_active = data_confirmed.copy()
     data_active['Cases'] = data_confirmed['Cases'] - data_deaths['Cases'] - data_recovered['Cases']
 
@@ -387,4 +374,4 @@ def update_graph(datePicked, selectedLocation):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='0.0.0.0')

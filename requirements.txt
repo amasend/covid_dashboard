@@ -1,4 +1,4 @@
-postman-covid19-sdk
+git+git://github.com/amasend/PostmanCovidSDK.git
 dash
 plotly
 pandas
