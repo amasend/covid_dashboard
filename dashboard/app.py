@@ -32,6 +32,10 @@ data_recovered = None
 data_deaths = None
 prev_location = 'POLAND'
 
+data_confirmed2 = None
+data_recovered2 = None
+data_deaths2 = None
+prev_location2 = None
 
 # Layout of Dash App
 app.layout = html.Div(
@@ -124,6 +128,23 @@ app.layout = html.Div(
                                 ),
                             ],
                         ),
+                        # Change to side-by-side for mobile layout
+                        html.Div(
+                            className="row",
+                            children=[
+                                html.Div(
+                                    className="div-for-dropdown",
+                                    children=[
+                                        dcc.Input(
+                                            id="number-of-cases",
+                                            type="number",
+                                            placeholder="Starting number of cases",
+                                            min=100, max=1000, step=100,
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
                         dcc.Markdown(
                             children=[
                                 "Source: [covid19api.com](https://documenter.getpostman.com/view/10808728/SzS8rjbc?version=latest)"
@@ -173,22 +194,65 @@ def download_data(location):
         data_deaths = remove_duplicated(
             client.get_by_country(country=client.Countries.POLAND, status=StatusType.DEATHS))
 
+    data_confirmed['Cases'] = clean_data(data=data_confirmed['Cases'])
+    data_recovered['Cases'] = clean_data(data=data_recovered['Cases'])
+    data_deaths['Cases'] = clean_data(data=data_deaths['Cases'])
+
+
+def download_data2(location):
+    global data_confirmed2
+    global data_recovered2
+    global data_deaths2
+
+    print('downloading2...')
+
+    if location:
+        data_confirmed2 = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location]))
+        data_recovered2 = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location],
+                                                                  status=StatusType.RECOVERED))
+        data_deaths2 = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location],
+                                                               status=StatusType.DEATHS))
+
+    data_confirmed2['Cases'] = clean_data(data=data_confirmed2['Cases'])
+    data_recovered2['Cases'] = clean_data(data=data_recovered2['Cases'])
+    data_deaths2['Cases'] = clean_data(data=data_deaths2['Cases'])
+
 
 def remove_duplicated(data: 'DataFrame') -> 'DataFrame':
     idx = data.groupby(level=0)['Cases'].transform(max) == data['Cases']
     return data[idx]
 
 
+def clean_data(data):
+    data = [case for case in data]
+    data = data[::-1]
+
+    for i, val in enumerate(data):
+        if i > 0:
+            if val > data[i - 1]:
+                data[i] = data[i - 1]
+
+    return data[::-1]
+
+
 @app.callback(
     Output("middle-text", "children"),
     [
         Input("location-dropdown", "value"),
+        Input("location-dropdown2", "value"),
     ],
 )
-def update_middle_text(selectedLocation):
-    return [
-        f"{selectedLocation if selectedLocation else 'POLAND'} graph of the Confirmed/Recovered/Deaths/Active cases."
-    ]
+def update_middle_text(selectedLocation, selectedLocation2):
+    if selectedLocation2:
+        data = [
+            f"{selectedLocation if selectedLocation else 'POLAND'} vs {selectedLocation2} graph of the Confirmed/Recovered/Deaths/Active cases."
+        ]
+    else:
+        data = [
+            f"{selectedLocation if selectedLocation else 'POLAND'} graph of the Confirmed/Recovered/Deaths/Active cases."
+        ]
+
+    return data
 
 
 @app.callback(
@@ -196,27 +260,58 @@ def update_middle_text(selectedLocation):
     [
         Input("date-picker", "date"),
         Input("location-dropdown", "value"),
-        Input("type-dropdown", "value")
+        Input("location-dropdown2", "value"),
+        Input("type-dropdown", "value"),
+        Input("number-of-cases", "value"),
     ],
 )
-def update_line_graph(datePicked, selectedLocation, selectedType):
-    date_picked = dt.strptime(datePicked, "%Y-%m-%d")
+def update_line_graph(datePicked, selectedLocation, selectedLocation2, selectedType, startCasesNum):
+
     global data_confirmed
     global data_recovered
     global data_deaths
     global prev_location
 
+    global data_confirmed2
+    global data_recovered2
+    global data_deaths2
+    global prev_location2
+
+    if startCasesNum is not None:
+        date_picked = dt.strptime(dt(2020, 1, 22).date(), "%Y-%m-%d")
+    else:
+        date_picked = dt.strptime(datePicked, "%Y-%m-%d")
+
     if prev_location != selectedLocation:
         download_data(location=selectedLocation)
         prev_location = selectedLocation
 
+    if prev_location2 != selectedLocation2 and selectedLocation2 is not None:
+        download_data2(location=selectedLocation2)
+        prev_location2 = selectedLocation2
+
     data_active = data_confirmed.copy()
     data_active['Cases'] = data_confirmed['Cases'] - data_deaths['Cases'] - data_recovered['Cases']
+
+    if startCasesNum is not None:
+        date_picked = data_confirmed.loc[data_confirmed['Cases'] >= startCasesNum].index[0]
 
     data_confirmed_tmp = data_confirmed.loc[date_picked:]
     data_recovered_tmp = data_recovered.loc[date_picked:]
     data_deaths_tmp = data_deaths.loc[date_picked:]
     data_active_tmp = data_active.loc[date_picked:]
+
+    if selectedLocation2:
+        data_active2 = data_confirmed2.copy()
+        data_active2['Cases'] = data_confirmed2['Cases'] - data_deaths2['Cases'] - data_recovered2['Cases']
+
+        if startCasesNum is not None:
+            date_picked = data_confirmed2.loc[data_confirmed2['Cases'] >= startCasesNum].index[0]
+
+        data_confirmed_tmp2 = data_confirmed2.loc[date_picked:]
+        data_recovered_tmp2 = data_recovered2.loc[date_picked:]
+        data_deaths_tmp2 = data_deaths2.loc[date_picked:]
+        data_active_tmp2 = data_active2.loc[date_picked:]
 
     if selectedType == 'log':
         data_confirmed_tmp['Cases'] = np.log(data_confirmed['Cases'])
@@ -231,11 +326,58 @@ def update_line_graph(datePicked, selectedLocation, selectedType):
         data_active_tmp['Cases'] = np.log(data_active['Cases'])
         data_active_tmp['Cases'][np.isneginf(data_active_tmp['Cases'])] = 0
 
+        if selectedLocation2:
+            data_confirmed_tmp2['Cases'] = np.log(data_confirmed2['Cases'])
+            data_confirmed_tmp2['Cases'][np.isneginf(data_confirmed_tmp2['Cases'])] = 0
+
+            data_recovered_tmp2['Cases'] = np.log(data_recovered2['Cases'])
+            data_recovered_tmp2['Cases'][np.isneginf(data_recovered_tmp2['Cases'])] = 0
+
+            data_deaths_tmp2['Cases'] = np.log(data_deaths2['Cases'])
+            data_deaths_tmp2['Cases'][np.isneginf(data_deaths_tmp2['Cases'])] = 0
+
+            data_active_tmp2['Cases'] = np.log(data_active2['Cases'])
+            data_active_tmp2['Cases'][np.isneginf(data_active_tmp2['Cases'])] = 0
+
     elif selectedType == 'percent':
         data_recovered_tmp['Cases'] = data_recovered['Cases'] / data_confirmed['Cases']
+        data_recovered_tmp['Cases'][np.isnan(data_recovered_tmp['Cases'])] = 0
+
         data_deaths_tmp['Cases'] = data_deaths['Cases'] / data_confirmed['Cases']
+        data_deaths_tmp['Cases'][np.isnan(data_deaths_tmp['Cases'])] = 0
+
         data_active_tmp['Cases'] = data_active['Cases'] / data_confirmed['Cases']
+        data_active_tmp['Cases'][np.isnan(data_active_tmp['Cases'])] = 0
+
         data_confirmed_tmp['Cases'] = data_confirmed['Cases'] / data_confirmed['Cases']
+        data_confirmed_tmp['Cases'][np.isnan(data_confirmed_tmp['Cases'])] = 0
+
+        if selectedLocation2:
+            data_recovered_tmp2['Cases'] = data_recovered2['Cases'] / data_confirmed2['Cases']
+            data_recovered_tmp2['Cases'][np.isnan(data_recovered_tmp2['Cases'])] = 0
+
+            data_deaths_tmp2['Cases'] = data_deaths2['Cases'] / data_confirmed2['Cases']
+            data_deaths_tmp2['Cases'][np.isnan(data_deaths_tmp2['Cases'])] = 0
+
+            data_active_tmp2['Cases'] = data_active2['Cases'] / data_confirmed2['Cases']
+            data_active_tmp2['Cases'][np.isnan(data_active_tmp2['Cases'])] = 0
+
+            data_confirmed_tmp2['Cases'] = data_confirmed2['Cases'] / data_confirmed2['Cases']
+            data_confirmed_tmp2['Cases'][np.isnan(data_confirmed_tmp2['Cases'])] = 0
+
+    if startCasesNum is not None:
+        data_recovered_tmp = data_recovered_tmp.reset_index(drop=True)
+        data_deaths_tmp = data_deaths_tmp.reset_index(drop=True)
+        data_active_tmp = data_active_tmp.reset_index(drop=True)
+        data_confirmed_tmp = data_confirmed_tmp.reset_index(drop=True)
+
+        if selectedLocation2:
+            data_recovered_tmp2 = data_recovered_tmp2.reset_index(drop=True)
+            data_deaths_tmp2 = data_deaths_tmp2.reset_index(drop=True)
+            data_active_tmp2 = data_active_tmp2.reset_index(drop=True)
+            data_confirmed_tmp2 = data_confirmed_tmp2.reset_index(drop=True)
+
+    print(f"NUmber: {startCasesNum}")
 
     layout = go.Layout(
         margin=go.layout.Margin(l=10, r=0, t=0, b=50),
@@ -252,49 +394,101 @@ def update_line_graph(datePicked, selectedLocation, selectedType):
         ),
     )
 
+    data = [
+        go.Scatter(
+            x=data_active_tmp.index,
+            y=data_active_tmp['Cases'],
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Cases</b>: %{y}',
+            mode="lines+markers",
+            marker=dict(color="white", symbol="circle", size=5),
+            name=f'Active {selectedLocation if selectedLocation else "POLAND"}',
+        ),
+        go.Scatter(
+            x=data_confirmed_tmp.index,
+            y=data_confirmed_tmp['Cases'],
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Cases</b>: %{y}',
+            mode="lines+markers",
+            marker=dict(color="yellow", symbol="square", size=5),
+            name=f'Confirmed {selectedLocation if selectedLocation else "POLAND"}',
+        ),
+        go.Scatter(
+            x=data_recovered_tmp.index,
+            y=data_recovered_tmp['Cases'],
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Cases</b>: %{y}',
+            mode="lines+markers",
+            marker=dict(color="green", symbol="circle", size=5),
+            name=f'Recovered {selectedLocation if selectedLocation else "POLAND"}',
+        ),
+        go.Scatter(
+            x=data_deaths_tmp.index,
+            y=data_deaths_tmp['Cases'],
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Cases</b>: %{y}',
+            mode="lines+markers",
+            marker=dict(color="red", symbol="circle-x", size=5),
+            name=f'Deaths {selectedLocation if selectedLocation else "POLAND"}',
+        ),
+    ]
+
+    if selectedLocation2:
+        data.extend(
+            [
+                go.Scatter(
+                    x=data_active_tmp2.index,
+                    y=data_active_tmp2['Cases'],
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Cases</b>: %{y}',
+                    mode="lines+markers",
+                    marker=dict(color="rgb(203,213,232)", symbol="circle", size=5, opacity=0.5),
+                    line=dict(dash='dash'),
+                    name=f'Active {selectedLocation2}',
+                ),
+                go.Scatter(
+                    x=data_confirmed_tmp2.index,
+                    y=data_confirmed_tmp2['Cases'],
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Cases</b>: %{y}',
+                    mode="lines+markers",
+                    marker=dict(color="goldenrod", symbol="square", size=5, opacity=0.5),
+                    line=dict(dash='dash'),
+                    name=f'Confirmed {selectedLocation2}',
+                ),
+                go.Scatter(
+                    x=data_recovered_tmp2.index,
+                    y=data_recovered_tmp2['Cases'],
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Cases</b>: %{y}',
+                    mode="lines+markers",
+                    marker=dict(color="#B6E880", symbol="circle", size=5, opacity=0.5),
+                    line=dict(dash='dash'),
+                    name=f'Recovered {selectedLocation2}',
+                ),
+                go.Scatter(
+                    x=data_deaths_tmp2.index,
+                    y=data_deaths_tmp2['Cases'],
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Cases</b>: %{y}',
+                    mode="lines+markers",
+                    marker=dict(color="magenta", symbol="circle-x", size=5, opacity=0.5),
+                    line=dict(dash='dash'),
+                    name=f'Deaths {selectedLocation2}',
+                ),
+            ]
+        )
+
     return go.Figure(
-        data=[
-            go.Scatter(
-                x=data_active_tmp.index,
-                y=data_active_tmp['Cases'],
-                hovertemplate=
-                '<br><b>Date</b>: %{x}</br>' +
-                '<b>Cases</b>: %{y}',
-                mode="lines+markers",
-                marker=dict(color="white", symbol="circle", size=5),
-                name='Active',
-            ),
-            go.Scatter(
-                x=data_confirmed_tmp.index,
-                y=data_confirmed_tmp['Cases'],
-                hovertemplate=
-                '<br><b>Date</b>: %{x}</br>' +
-                '<b>Cases</b>: %{y}',
-                mode="lines+markers",
-                marker=dict(color="yellow", symbol="square", size=5),
-                name='Confirmed',
-            ),
-            go.Scatter(
-                x=data_recovered_tmp.index,
-                y=data_recovered_tmp['Cases'],
-                hovertemplate=
-                '<br><b>Date</b>: %{x}</br>' +
-                '<b>Cases</b>: %{y}',
-                mode="lines+markers",
-                marker=dict(color="green", symbol="circle", size=5),
-                name='Recovered',
-            ),
-            go.Scatter(
-                x=data_deaths_tmp.index,
-                y=data_deaths_tmp['Cases'],
-                hovertemplate=
-                '<br><b>Date</b>: %{x}</br>' +
-                '<b>Cases</b>: %{y}',
-                mode="lines+markers",
-                marker=dict(color="red", symbol="circle-x", size=5),
-                name='Deaths',
-            ),
-        ],
+        data=data,
         layout=layout,
     )
 
