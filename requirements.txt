@@ -1,0 +1,5 @@
+postman-covid19-sdk
+dash
+plotly
+pandas
+numpy
