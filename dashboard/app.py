@@ -30,7 +30,7 @@ data = client.get_by_country(country=client.Countries.POLAND, status=StatusType.
 data_confirmed = None
 data_recovered = None
 data_deaths = None
-prev_location = None
+prev_location = 'POLAND'
 
 
 # Layout of Dash App
@@ -80,6 +80,37 @@ app.layout = html.Div(
                                             ],
                                             placeholder="Select a location",
                                         ),
+                                    ],
+                                ),
+                            ],
+                        ),
+                        # Change to side-by-side for mobile layout
+                        html.Div(
+                            className="row",
+                            children=[
+                                html.Div(
+                                    className="div-for-dropdown",
+                                    children=[
+                                        # Dropdown for locations on map
+                                        dcc.Dropdown(
+                                            id="location-dropdown2",
+                                            options=[
+                                                {"label": i, "value": i}
+                                                for i in list_of_locations
+                                            ],
+                                            placeholder="Select a location to compare",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
+                        # Change to side-by-side for mobile layout
+                        html.Div(
+                            className="row",
+                            children=[
+                                html.Div(
+                                    className="div-for-dropdown",
+                                    children=[
                                         dcc.Dropdown(
                                             id="type-dropdown",
                                             options=[
@@ -87,7 +118,7 @@ app.layout = html.Div(
                                                 {"label": 'log', "value": 'log'},
                                                 {"label": 'percent', "value": 'percent'},
                                             ],
-                                            placeholder="Select a location",
+                                            placeholder="Select a graph type",
                                         ),
                                     ],
                                 ),
@@ -125,6 +156,8 @@ def download_data(location):
     global data_confirmed
     global data_recovered
     global data_deaths
+
+    print('downloading...')
 
     if location:
         data_confirmed = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location]))
@@ -173,12 +206,9 @@ def update_line_graph(datePicked, selectedLocation, selectedType):
     global data_deaths
     global prev_location
 
-    if prev_location != selectedLocation or prev_location is None:
+    if prev_location != selectedLocation:
         download_data(location=selectedLocation)
-        if prev_location is None:
-            prev_location = 'POLAND'
-        else:
-            prev_location = selectedLocation
+        prev_location = selectedLocation
 
     data_active = data_confirmed.copy()
     data_active['Cases'] = data_confirmed['Cases'] - data_deaths['Cases'] - data_recovered['Cases']
