@@ -12,6 +12,7 @@ You need to install a docker on your system, please refer to `docker` installati
 
 After docker installation just run:
 `docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.0`
+and go to `127.0.0.1:8050` in your browser.
 
 ## Main Screen
 ![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/main.png)
