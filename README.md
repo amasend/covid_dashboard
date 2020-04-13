@@ -13,3 +13,14 @@ You need to install a docker on your system, please refer to `docker` installati
 After docker installation just run:
 `docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.0`
 
+## Main Screen
+![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/main.png)
+
+## POLAND vs CHINA
+![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/poland_china.png)
+
+## POLAND vs CHINA logarithmic
+![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/poland_china_log.png)
+
+## POLAND vs CHINA logarithmic started from ~ 100 confirmed cases
+![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/poland_china_log_100.png)
