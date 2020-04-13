@@ -300,60 +300,60 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
     # note: data transformation part per user choice
     if selected_type == 'log':
         data_manager.data_confirmed_tmp['Cases'] = np.log(data_manager.data_confirmed['Cases'])
-        data_manager.data_confirmed_tmp['Cases'][np.isneginf(data_manager.data_confirmed_tmp['Cases'])] = 0
+        data_manager.data_confirmed_tmp['Cases'].loc[np.isneginf(data_manager.data_confirmed_tmp['Cases'])] = 0
 
         data_manager.data_recovered_tmp['Cases'] = np.log(data_manager.data_recovered['Cases'])
-        data_manager.data_recovered_tmp['Cases'][np.isneginf(data_manager.data_recovered_tmp['Cases'])] = 0
+        data_manager.data_recovered_tmp['Cases'].loc[np.isneginf(data_manager.data_recovered_tmp['Cases'])] = 0
 
         data_manager.data_deaths_tmp['Cases'] = np.log(data_manager.data_deaths['Cases'])
-        data_manager.data_deaths_tmp['Cases'][np.isneginf(data_manager.data_deaths_tmp['Cases'])] = 0
+        data_manager.data_deaths_tmp['Cases'].loc[np.isneginf(data_manager.data_deaths_tmp['Cases'])] = 0
 
         data_active_tmp['Cases'] = np.log(data_active['Cases'])
-        data_active_tmp['Cases'][np.isneginf(data_active_tmp['Cases'])] = 0
+        data_active_tmp['Cases'].loc[np.isneginf(data_active_tmp['Cases'])] = 0
 
         if selected_location2:
             data_manager.data_confirmed_tmp2['Cases'] = np.log(data_manager.data_confirmed2['Cases'])
-            data_manager.data_confirmed_tmp2['Cases'][np.isneginf(data_manager.data_confirmed_tmp2['Cases'])] = 0
+            data_manager.data_confirmed_tmp2['Cases'].loc[np.isneginf(data_manager.data_confirmed_tmp2['Cases'])] = 0
 
             data_manager.data_recovered_tmp2['Cases'] = np.log(data_manager.data_recovered2['Cases'])
-            data_manager.data_recovered_tmp2['Cases'][np.isneginf(data_manager.data_recovered_tmp2['Cases'])] = 0
+            data_manager.data_recovered_tmp2['Cases'].loc[np.isneginf(data_manager.data_recovered_tmp2['Cases'])] = 0
 
             data_manager.data_deaths_tmp2['Cases'] = np.log(data_manager.data_deaths2['Cases'])
-            data_manager.data_deaths_tmp2['Cases'][np.isneginf(data_manager.data_deaths_tmp2['Cases'])] = 0
+            data_manager.data_deaths_tmp2['Cases'].loc[np.isneginf(data_manager.data_deaths_tmp2['Cases'])] = 0
 
             data_active_tmp2['Cases'] = np.log(data_active2['Cases'])
-            data_active_tmp2['Cases'][np.isneginf(data_active_tmp2['Cases'])] = 0
+            data_active_tmp2['Cases'].loc[np.isneginf(data_active_tmp2['Cases'])] = 0
 
     elif selected_type == 'percent':
         data_manager.data_recovered_tmp['Cases'] = data_manager.data_recovered['Cases'] / data_manager.data_confirmed[
             'Cases']
-        data_manager.data_recovered_tmp['Cases'][np.isnan(data_manager.data_recovered_tmp['Cases'])] = 0
+        data_manager.data_recovered_tmp['Cases'].loc[np.isnan(data_manager.data_recovered_tmp['Cases'])] = 0
 
         data_manager.data_deaths_tmp['Cases'] = data_manager.data_deaths['Cases'] / data_manager.data_confirmed['Cases']
-        data_manager.data_deaths_tmp['Cases'][np.isnan(data_manager.data_deaths_tmp['Cases'])] = 0
+        data_manager.data_deaths_tmp['Cases'].loc[np.isnan(data_manager.data_deaths_tmp['Cases'])] = 0
 
         data_active_tmp['Cases'] = data_active['Cases'] / data_manager.data_confirmed['Cases']
-        data_active_tmp['Cases'][np.isnan(data_active_tmp['Cases'])] = 0
+        data_active_tmp['Cases'].loc[np.isnan(data_active_tmp['Cases'])] = 0
 
         data_manager.data_confirmed_tmp['Cases'] = data_manager.data_confirmed['Cases'] / data_manager.data_confirmed[
             'Cases']
-        data_manager.data_confirmed_tmp['Cases'][np.isnan(data_manager.data_confirmed_tmp['Cases'])] = 0
+        data_manager.data_confirmed_tmp['Cases'].loc[np.isnan(data_manager.data_confirmed_tmp['Cases'])] = 0
 
         if selected_location2:
             data_manager.data_recovered_tmp2['Cases'] = (data_manager.data_recovered2['Cases'] /
                                                          data_manager.data_confirmed2['Cases'])
-            data_manager.data_recovered_tmp2['Cases'][np.isnan(data_manager.data_recovered_tmp2['Cases'])] = 0
+            data_manager.data_recovered_tmp2['Cases'].loc[np.isnan(data_manager.data_recovered_tmp2['Cases'])] = 0
 
             data_manager.data_deaths_tmp2['Cases'] = data_manager.data_deaths2['Cases'] / data_manager.data_confirmed2[
                 'Cases']
-            data_manager.data_deaths_tmp2['Cases'][np.isnan(data_manager.data_deaths_tmp2['Cases'])] = 0
+            data_manager.data_deaths_tmp2['Cases'].loc[np.isnan(data_manager.data_deaths_tmp2['Cases'])] = 0
 
             data_active_tmp2['Cases'] = data_active2['Cases'] / data_manager.data_confirmed2['Cases']
-            data_active_tmp2['Cases'][np.isnan(data_active_tmp2['Cases'])] = 0
+            data_active_tmp2['Cases'].loc[np.isnan(data_active_tmp2['Cases'])] = 0
 
             data_manager.data_confirmed_tmp2['Cases'] = (data_manager.data_confirmed2['Cases'] /
                                                          data_manager.data_confirmed2['Cases'])
-            data_manager.data_confirmed_tmp2['Cases'][np.isnan(data_manager.data_confirmed_tmp2['Cases'])] = 0
+            data_manager.data_confirmed_tmp2['Cases'].loc[np.isnan(data_manager.data_confirmed_tmp2['Cases'])] = 0
     # --- end note
 
     # note: reset date index to numerical only if user specified starting number of cases

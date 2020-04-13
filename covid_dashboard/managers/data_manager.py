@@ -64,10 +64,6 @@ class DataManager:
         data = DataFrame(data=data['Cases']).resample('D').sum()
         return data.iloc[:-1]
 
-        # data = data.loc[(data['Province'] == '') & (data['City'] == '')]
-        # idx = data.groupby(level=0)['Cases'].transform(max) == data['Cases']
-        # return data[idx]
-
     @staticmethod
     def clean_data(data: 'Series') -> List[float]:
         """
