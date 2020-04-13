@@ -1,41 +1,27 @@
+from datetime import datetime as dt
+from typing import List
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import pandas as pd
-import json
 import numpy as np
-from postman_covid19_sdk.client import APIClient
-from postman_covid19_sdk.utils.enums import StatusType
-
 from dash.dependencies import Input, Output
 from plotly import graph_objs as go
 from plotly.graph_objs import *
-from datetime import datetime as dt
 
+from covid_dashboard.managers.data_manager import DataManager
+
+# initialize data manager
+data_manager = DataManager()
+
+# initialize dash server
 app = dash.Dash(
     __name__, meta_tags=[{"name": "viewport", "content": "width=device-width"}]
 )
 server = app.server
-client = APIClient()
 
 # Plotly mapbox public token
 mapbox_access_token = "pk.eyJ1IjoicGxvdGx5bWFwYm94IiwiYSI6ImNqdnBvNDMyaTAxYzkzeW5ubWdpZ2VjbmMifQ.TXcBE-xg9BFdV2ocecc_7g"
-
-# Dictionary of all countries with locations
-with open("../location_list.json", 'r') as f:
-    list_of_locations = json.loads(f.read())
-
-data = client.get_by_country(country=client.Countries.POLAND, status=StatusType.CONFIRMED)
-
-data_confirmed = None
-data_recovered = None
-data_deaths = None
-prev_location = 'POLAND'
-
-data_confirmed2 = None
-data_recovered2 = None
-data_deaths2 = None
-prev_location2 = None
 
 # Layout of Dash App
 app.layout = html.Div(
@@ -80,7 +66,7 @@ app.layout = html.Div(
                                             id="location-dropdown",
                                             options=[
                                                 {"label": i, "value": i}
-                                                for i in list_of_locations
+                                                for i in data_manager.locations
                                             ],
                                             placeholder="Select a location",
                                         ),
@@ -100,7 +86,7 @@ app.layout = html.Div(
                                             id="location-dropdown2",
                                             options=[
                                                 {"label": i, "value": i}
-                                                for i in list_of_locations
+                                                for i in data_manager.locations
                                             ],
                                             placeholder="Select a location to compare",
                                         ),
@@ -173,68 +159,6 @@ app.layout = html.Div(
 )
 
 
-def download_data(location):
-    global data_confirmed
-    global data_recovered
-    global data_deaths
-
-    print('downloading...')
-
-    if location:
-        data_confirmed = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location]))
-        data_recovered = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location],
-                                                                 status=StatusType.RECOVERED))
-        data_deaths = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location],
-                                                              status=StatusType.DEATHS))
-
-    else:
-        data_confirmed = remove_duplicated(client.get_by_country(country=client.Countries.POLAND))
-        data_recovered = remove_duplicated(
-            client.get_by_country(country=client.Countries.POLAND, status=StatusType.RECOVERED))
-        data_deaths = remove_duplicated(
-            client.get_by_country(country=client.Countries.POLAND, status=StatusType.DEATHS))
-
-    data_confirmed['Cases'] = clean_data(data=data_confirmed['Cases'])
-    data_recovered['Cases'] = clean_data(data=data_recovered['Cases'])
-    data_deaths['Cases'] = clean_data(data=data_deaths['Cases'])
-
-
-def download_data2(location):
-    global data_confirmed2
-    global data_recovered2
-    global data_deaths2
-
-    print('downloading2...')
-
-    if location:
-        data_confirmed2 = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location]))
-        data_recovered2 = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location],
-                                                                  status=StatusType.RECOVERED))
-        data_deaths2 = remove_duplicated(client.get_by_country(country=client.Countries.__dict__[location],
-                                                               status=StatusType.DEATHS))
-
-    data_confirmed2['Cases'] = clean_data(data=data_confirmed2['Cases'])
-    data_recovered2['Cases'] = clean_data(data=data_recovered2['Cases'])
-    data_deaths2['Cases'] = clean_data(data=data_deaths2['Cases'])
-
-
-def remove_duplicated(data: 'DataFrame') -> 'DataFrame':
-    idx = data.groupby(level=0)['Cases'].transform(max) == data['Cases']
-    return data[idx]
-
-
-def clean_data(data):
-    data = [case for case in data]
-    data = data[::-1]
-
-    for i, val in enumerate(data):
-        if i > 0:
-            if val > data[i - 1]:
-                data[i] = data[i - 1]
-
-    return data[::-1]
-
-
 @app.callback(
     Output("middle-text", "children"),
     [
@@ -242,14 +166,32 @@ def clean_data(data):
         Input("location-dropdown2", "value"),
     ],
 )
-def update_middle_text(selectedLocation, selectedLocation2):
-    if selectedLocation2:
+def update_middle_text(selected_location: str, selected_location2: str) -> List[str]:
+    """
+    Update text between map and graph.
+    Only trigger when any of the locations are changed by the user.
+
+    Parameters
+    ----------
+    selected_location: str, required
+        Name of the first location.
+
+    selected_location2: str, required
+        Name of the second location.
+
+    Returns
+    -------
+    List of the strings, updated text.
+    """
+    if selected_location2:
         data = [
-            f"{selectedLocation if selectedLocation else 'POLAND'} vs {selectedLocation2} graph of the Confirmed/Recovered/Deaths/Active cases."
+            (f"{selected_location if selected_location else 'POLAND'} vs {selected_location2} "
+             f"graph of the Confirmed/Recovered/Deaths/Active cases.")
         ]
     else:
         data = [
-            f"{selectedLocation if selectedLocation else 'POLAND'} graph of the Confirmed/Recovered/Deaths/Active cases."
+            (f"{selected_location if selected_location else 'POLAND'} "
+             f"graph of the Confirmed/Recovered/Deaths/Active cases.")
         ]
 
     return data
@@ -265,120 +207,162 @@ def update_middle_text(selectedLocation, selectedLocation2):
         Input("number-of-cases", "value"),
     ],
 )
-def update_line_graph(datePicked, selectedLocation, selectedLocation2, selectedType, startCasesNum):
+def update_line_graph(date_picked: str, selected_location: str, selected_location2: str, selected_type: str,
+                      start_cases_num: str) -> 'go.Figure':
+    """
+    Update the main line graph with countries data and comparison.
 
-    global data_confirmed
-    global data_recovered
-    global data_deaths
-    global prev_location
+    Parameters
+    ----------
+    date_picked: str, required
+        Date picked in the date picker panel.
 
-    global data_confirmed2
-    global data_recovered2
-    global data_deaths2
-    global prev_location2
+    selected_location: str, required
+        First selected location (default is None -> POLAND)
 
-    if startCasesNum is not None:
-        date_picked = dt.strptime(dt(2020, 1, 22).date(), "%Y-%m-%d")
+    selected_location2: str, required
+        Second selected location (default is None)
+
+    selected_type: str, required
+        Type of the data transformation to show on the graph. OneOf: [linear, log, percent]
+
+    start_cases_num: str, required
+        Number of cases picked by the user on the panel. This indicates from where to start plotting a graph.
+        Could be useful to compare situation in the countries.
+    """
+    # note: if user picked up a number of cases, we should turn off date filter
+    if start_cases_num is not None:
+        date_picked = dt.strptime(str(dt(2020, 1, 22).date()), "%Y-%m-%d")
     else:
-        date_picked = dt.strptime(datePicked, "%Y-%m-%d")
+        date_picked = dt.strptime(date_picked, "%Y-%m-%d")
+    # --- end note
 
-    if prev_location != selectedLocation:
-        download_data(location=selectedLocation)
-        prev_location = selectedLocation
+    # note: download data from API only if user picked a new location, otherwise operate on already downloaded data
+    if data_manager.prev_location != selected_location:
+        data_manager.download_data_for_location_one(location=selected_location)
+        data_manager.prev_location = selected_location
 
-    if prev_location2 != selectedLocation2 and selectedLocation2 is not None:
-        download_data2(location=selectedLocation2)
-        prev_location2 = selectedLocation2
+    if data_manager.prev_location2 != selected_location2 and selected_location2 is not None:
+        data_manager.download_data_for_location_two(location=selected_location2)
+        data_manager.prev_location2 = selected_location2
+    # --- end note
 
-    data_active = data_confirmed.copy()
-    data_active['Cases'] = data_confirmed['Cases'] - data_deaths['Cases'] - data_recovered['Cases']
+    # note: compute active cases (all cases - deaths - recovered)
+    data_active = data_manager.data_confirmed.copy()
+    data_active['Cases'] = (data_manager.data_confirmed['Cases'] - data_manager.data_deaths['Cases'] -
+                            data_manager.data_recovered['Cases'])
+    # --- end note
 
-    if startCasesNum is not None:
-        date_picked = data_confirmed.loc[data_confirmed['Cases'] >= startCasesNum].index[0]
+    # note: find date equivalent to number of cases that user picked,
+    # we should move the beginning of our data to that date
+    if start_cases_num is not None:
+        try:
+            date_picked = (data_manager.data_confirmed.loc[data_manager.data_confirmed['Cases'] >=
+                                                           start_cases_num].index[0])
+        except IndexError:
+            date_picked = data_manager.data_confirmed.index[-1]
+    # --- end note
 
-    data_confirmed_tmp = data_confirmed.loc[date_picked:]
-    data_recovered_tmp = data_recovered.loc[date_picked:]
-    data_deaths_tmp = data_deaths.loc[date_picked:]
+    # note: filter data by the starting date
+    data_manager.data_confirmed_tmp = data_manager.data_confirmed.loc[date_picked:]
+    data_manager.data_recovered_tmp = data_manager.data_recovered.loc[date_picked:]
+    data_manager.data_deaths_tmp = data_manager.data_deaths.loc[date_picked:]
     data_active_tmp = data_active.loc[date_picked:]
+    # --- end note
 
-    if selectedLocation2:
-        data_active2 = data_confirmed2.copy()
-        data_active2['Cases'] = data_confirmed2['Cases'] - data_deaths2['Cases'] - data_recovered2['Cases']
+    # to the same as above but for second location data
+    if selected_location2:
+        data_active2 = data_manager.data_confirmed2.copy()
+        data_active2['Cases'] = (data_manager.data_confirmed2['Cases'] - data_manager.data_deaths2['Cases'] -
+                                 data_manager.data_recovered2['Cases'])
 
-        if startCasesNum is not None:
-            date_picked = data_confirmed2.loc[data_confirmed2['Cases'] >= startCasesNum].index[0]
+        if start_cases_num is not None:
+            try:
+                date_picked = (data_manager.data_confirmed2.loc[data_manager.data_confirmed2['Cases'] >=
+                                                                start_cases_num].index[0])
+            except IndexError:
+                date_picked = data_manager.data_confirmed2.index[-1]
 
-        data_confirmed_tmp2 = data_confirmed2.loc[date_picked:]
-        data_recovered_tmp2 = data_recovered2.loc[date_picked:]
-        data_deaths_tmp2 = data_deaths2.loc[date_picked:]
+        data_manager.data_confirmed_tmp2 = data_manager.data_confirmed2.loc[date_picked:]
+        data_manager.data_recovered_tmp2 = data_manager.data_recovered2.loc[date_picked:]
+        data_manager.data_deaths_tmp2 = data_manager.data_deaths2.loc[date_picked:]
         data_active_tmp2 = data_active2.loc[date_picked:]
+    # --- end note
 
-    if selectedType == 'log':
-        data_confirmed_tmp['Cases'] = np.log(data_confirmed['Cases'])
-        data_confirmed_tmp['Cases'][np.isneginf(data_confirmed_tmp['Cases'])] = 0
+    # note: data transformation part per user choice
+    if selected_type == 'log':
+        data_manager.data_confirmed_tmp['Cases'] = np.log(data_manager.data_confirmed['Cases'])
+        data_manager.data_confirmed_tmp['Cases'][np.isneginf(data_manager.data_confirmed_tmp['Cases'])] = 0
 
-        data_recovered_tmp['Cases'] = np.log(data_recovered['Cases'])
-        data_recovered_tmp['Cases'][np.isneginf(data_recovered_tmp['Cases'])] = 0
+        data_manager.data_recovered_tmp['Cases'] = np.log(data_manager.data_recovered['Cases'])
+        data_manager.data_recovered_tmp['Cases'][np.isneginf(data_manager.data_recovered_tmp['Cases'])] = 0
 
-        data_deaths_tmp['Cases'] = np.log(data_deaths['Cases'])
-        data_deaths_tmp['Cases'][np.isneginf(data_deaths_tmp['Cases'])] = 0
+        data_manager.data_deaths_tmp['Cases'] = np.log(data_manager.data_deaths['Cases'])
+        data_manager.data_deaths_tmp['Cases'][np.isneginf(data_manager.data_deaths_tmp['Cases'])] = 0
 
         data_active_tmp['Cases'] = np.log(data_active['Cases'])
         data_active_tmp['Cases'][np.isneginf(data_active_tmp['Cases'])] = 0
 
-        if selectedLocation2:
-            data_confirmed_tmp2['Cases'] = np.log(data_confirmed2['Cases'])
-            data_confirmed_tmp2['Cases'][np.isneginf(data_confirmed_tmp2['Cases'])] = 0
+        if selected_location2:
+            data_manager.data_confirmed_tmp2['Cases'] = np.log(data_manager.data_confirmed2['Cases'])
+            data_manager.data_confirmed_tmp2['Cases'][np.isneginf(data_manager.data_confirmed_tmp2['Cases'])] = 0
 
-            data_recovered_tmp2['Cases'] = np.log(data_recovered2['Cases'])
-            data_recovered_tmp2['Cases'][np.isneginf(data_recovered_tmp2['Cases'])] = 0
+            data_manager.data_recovered_tmp2['Cases'] = np.log(data_manager.data_recovered2['Cases'])
+            data_manager.data_recovered_tmp2['Cases'][np.isneginf(data_manager.data_recovered_tmp2['Cases'])] = 0
 
-            data_deaths_tmp2['Cases'] = np.log(data_deaths2['Cases'])
-            data_deaths_tmp2['Cases'][np.isneginf(data_deaths_tmp2['Cases'])] = 0
+            data_manager.data_deaths_tmp2['Cases'] = np.log(data_manager.data_deaths2['Cases'])
+            data_manager.data_deaths_tmp2['Cases'][np.isneginf(data_manager.data_deaths_tmp2['Cases'])] = 0
 
             data_active_tmp2['Cases'] = np.log(data_active2['Cases'])
             data_active_tmp2['Cases'][np.isneginf(data_active_tmp2['Cases'])] = 0
 
-    elif selectedType == 'percent':
-        data_recovered_tmp['Cases'] = data_recovered['Cases'] / data_confirmed['Cases']
-        data_recovered_tmp['Cases'][np.isnan(data_recovered_tmp['Cases'])] = 0
+    elif selected_type == 'percent':
+        data_manager.data_recovered_tmp['Cases'] = data_manager.data_recovered['Cases'] / data_manager.data_confirmed[
+            'Cases']
+        data_manager.data_recovered_tmp['Cases'][np.isnan(data_manager.data_recovered_tmp['Cases'])] = 0
 
-        data_deaths_tmp['Cases'] = data_deaths['Cases'] / data_confirmed['Cases']
-        data_deaths_tmp['Cases'][np.isnan(data_deaths_tmp['Cases'])] = 0
+        data_manager.data_deaths_tmp['Cases'] = data_manager.data_deaths['Cases'] / data_manager.data_confirmed['Cases']
+        data_manager.data_deaths_tmp['Cases'][np.isnan(data_manager.data_deaths_tmp['Cases'])] = 0
 
-        data_active_tmp['Cases'] = data_active['Cases'] / data_confirmed['Cases']
+        data_active_tmp['Cases'] = data_active['Cases'] / data_manager.data_confirmed['Cases']
         data_active_tmp['Cases'][np.isnan(data_active_tmp['Cases'])] = 0
 
-        data_confirmed_tmp['Cases'] = data_confirmed['Cases'] / data_confirmed['Cases']
-        data_confirmed_tmp['Cases'][np.isnan(data_confirmed_tmp['Cases'])] = 0
+        data_manager.data_confirmed_tmp['Cases'] = data_manager.data_confirmed['Cases'] / data_manager.data_confirmed[
+            'Cases']
+        data_manager.data_confirmed_tmp['Cases'][np.isnan(data_manager.data_confirmed_tmp['Cases'])] = 0
 
-        if selectedLocation2:
-            data_recovered_tmp2['Cases'] = data_recovered2['Cases'] / data_confirmed2['Cases']
-            data_recovered_tmp2['Cases'][np.isnan(data_recovered_tmp2['Cases'])] = 0
+        if selected_location2:
+            data_manager.data_recovered_tmp2['Cases'] = (data_manager.data_recovered2['Cases'] /
+                                                         data_manager.data_confirmed2['Cases'])
+            data_manager.data_recovered_tmp2['Cases'][np.isnan(data_manager.data_recovered_tmp2['Cases'])] = 0
 
-            data_deaths_tmp2['Cases'] = data_deaths2['Cases'] / data_confirmed2['Cases']
-            data_deaths_tmp2['Cases'][np.isnan(data_deaths_tmp2['Cases'])] = 0
+            data_manager.data_deaths_tmp2['Cases'] = data_manager.data_deaths2['Cases'] / data_manager.data_confirmed2[
+                'Cases']
+            data_manager.data_deaths_tmp2['Cases'][np.isnan(data_manager.data_deaths_tmp2['Cases'])] = 0
 
-            data_active_tmp2['Cases'] = data_active2['Cases'] / data_confirmed2['Cases']
+            data_active_tmp2['Cases'] = data_active2['Cases'] / data_manager.data_confirmed2['Cases']
             data_active_tmp2['Cases'][np.isnan(data_active_tmp2['Cases'])] = 0
 
-            data_confirmed_tmp2['Cases'] = data_confirmed2['Cases'] / data_confirmed2['Cases']
-            data_confirmed_tmp2['Cases'][np.isnan(data_confirmed_tmp2['Cases'])] = 0
+            data_manager.data_confirmed_tmp2['Cases'] = (data_manager.data_confirmed2['Cases'] /
+                                                         data_manager.data_confirmed2['Cases'])
+            data_manager.data_confirmed_tmp2['Cases'][np.isnan(data_manager.data_confirmed_tmp2['Cases'])] = 0
+    # --- end note
 
-    if startCasesNum is not None:
-        data_recovered_tmp = data_recovered_tmp.reset_index(drop=True)
-        data_deaths_tmp = data_deaths_tmp.reset_index(drop=True)
+    # note: reset date index to numerical only if user specified starting number of cases
+    if start_cases_num is not None:
+        data_manager.data_recovered_tmp = data_manager.data_recovered_tmp.reset_index(drop=True)
+        data_manager.data_deaths_tmp = data_manager.data_deaths_tmp.reset_index(drop=True)
         data_active_tmp = data_active_tmp.reset_index(drop=True)
-        data_confirmed_tmp = data_confirmed_tmp.reset_index(drop=True)
+        data_manager.data_confirmed_tmp = data_manager.data_confirmed_tmp.reset_index(drop=True)
 
-        if selectedLocation2:
-            data_recovered_tmp2 = data_recovered_tmp2.reset_index(drop=True)
-            data_deaths_tmp2 = data_deaths_tmp2.reset_index(drop=True)
+        if selected_location2:
+            data_manager.data_recovered_tmp2 = data_manager.data_recovered_tmp2.reset_index(drop=True)
+            data_manager.data_deaths_tmp2 = data_manager.data_deaths_tmp2.reset_index(drop=True)
             data_active_tmp2 = data_active_tmp2.reset_index(drop=True)
-            data_confirmed_tmp2 = data_confirmed_tmp2.reset_index(drop=True)
+            data_manager.data_confirmed_tmp2 = data_manager.data_confirmed_tmp2.reset_index(drop=True)
+    # --- end note
 
-    print(f"NUmber: {startCasesNum}")
-
+    # create updated graph layout
     layout = go.Layout(
         margin=go.layout.Margin(l=10, r=0, t=0, b=50),
         showlegend=True,
@@ -394,6 +378,7 @@ def update_line_graph(datePicked, selectedLocation, selectedLocation2, selectedT
         ),
     )
 
+    # prepare each graph layer
     data = [
         go.Scatter(
             x=data_active_tmp.index,
@@ -403,41 +388,42 @@ def update_line_graph(datePicked, selectedLocation, selectedLocation2, selectedT
             '<b>Cases</b>: %{y}',
             mode="lines+markers",
             marker=dict(color="white", symbol="circle", size=5),
-            name=f'Active {selectedLocation if selectedLocation else "POLAND"}',
+            name=f'Active {selected_location if selected_location else "POLAND"}',
         ),
         go.Scatter(
-            x=data_confirmed_tmp.index,
-            y=data_confirmed_tmp['Cases'],
+            x=data_manager.data_confirmed_tmp.index,
+            y=data_manager.data_confirmed_tmp['Cases'],
             hovertemplate=
             '<br><b>Date</b>: %{x}</br>' +
             '<b>Cases</b>: %{y}',
             mode="lines+markers",
             marker=dict(color="yellow", symbol="square", size=5),
-            name=f'Confirmed {selectedLocation if selectedLocation else "POLAND"}',
+            name=f'Confirmed {selected_location if selected_location else "POLAND"}',
         ),
         go.Scatter(
-            x=data_recovered_tmp.index,
-            y=data_recovered_tmp['Cases'],
+            x=data_manager.data_recovered_tmp.index,
+            y=data_manager.data_recovered_tmp['Cases'],
             hovertemplate=
             '<br><b>Date</b>: %{x}</br>' +
             '<b>Cases</b>: %{y}',
             mode="lines+markers",
             marker=dict(color="green", symbol="circle", size=5),
-            name=f'Recovered {selectedLocation if selectedLocation else "POLAND"}',
+            name=f'Recovered {selected_location if selected_location else "POLAND"}',
         ),
         go.Scatter(
-            x=data_deaths_tmp.index,
-            y=data_deaths_tmp['Cases'],
+            x=data_manager.data_deaths_tmp.index,
+            y=data_manager.data_deaths_tmp['Cases'],
             hovertemplate=
             '<br><b>Date</b>: %{x}</br>' +
             '<b>Cases</b>: %{y}',
             mode="lines+markers",
             marker=dict(color="red", symbol="circle-x", size=5),
-            name=f'Deaths {selectedLocation if selectedLocation else "POLAND"}',
+            name=f'Deaths {selected_location if selected_location else "POLAND"}',
         ),
     ]
 
-    if selectedLocation2:
+    # prepare each graph layer for second location
+    if selected_location2:
         data.extend(
             [
                 go.Scatter(
@@ -449,40 +435,40 @@ def update_line_graph(datePicked, selectedLocation, selectedLocation2, selectedT
                     mode="lines+markers",
                     marker=dict(color="rgb(203,213,232)", symbol="circle", size=5, opacity=0.5),
                     line=dict(dash='dash'),
-                    name=f'Active {selectedLocation2}',
+                    name=f'Active {selected_location2}',
                 ),
                 go.Scatter(
-                    x=data_confirmed_tmp2.index,
-                    y=data_confirmed_tmp2['Cases'],
+                    x=data_manager.data_confirmed_tmp2.index,
+                    y=data_manager.data_confirmed_tmp2['Cases'],
                     hovertemplate=
                     '<br><b>Date</b>: %{x}</br>' +
                     '<b>Cases</b>: %{y}',
                     mode="lines+markers",
                     marker=dict(color="goldenrod", symbol="square", size=5, opacity=0.5),
                     line=dict(dash='dash'),
-                    name=f'Confirmed {selectedLocation2}',
+                    name=f'Confirmed {selected_location2}',
                 ),
                 go.Scatter(
-                    x=data_recovered_tmp2.index,
-                    y=data_recovered_tmp2['Cases'],
+                    x=data_manager.data_recovered_tmp2.index,
+                    y=data_manager.data_recovered_tmp2['Cases'],
                     hovertemplate=
                     '<br><b>Date</b>: %{x}</br>' +
                     '<b>Cases</b>: %{y}',
                     mode="lines+markers",
                     marker=dict(color="#B6E880", symbol="circle", size=5, opacity=0.5),
                     line=dict(dash='dash'),
-                    name=f'Recovered {selectedLocation2}',
+                    name=f'Recovered {selected_location2}',
                 ),
                 go.Scatter(
-                    x=data_deaths_tmp2.index,
-                    y=data_deaths_tmp2['Cases'],
+                    x=data_manager.data_deaths_tmp2.index,
+                    y=data_manager.data_deaths_tmp2['Cases'],
                     hovertemplate=
                     '<br><b>Date</b>: %{x}</br>' +
                     '<b>Cases</b>: %{y}',
                     mode="lines+markers",
                     marker=dict(color="magenta", symbol="circle-x", size=5, opacity=0.5),
                     line=dict(dash='dash'),
-                    name=f'Deaths {selectedLocation2}',
+                    name=f'Deaths {selected_location2}',
                 ),
             ]
         )
@@ -493,51 +479,66 @@ def update_line_graph(datePicked, selectedLocation, selectedLocation2, selectedT
     )
 
 
-# Update Map Graph based on date-picker, selected data on histogram and location dropdown
+# Update Map Graph based on date-picker and location dropdown
 @app.callback(
     Output("map-graph", "figure"),
     [
-        Input("date-picker", "date"),
         Input("location-dropdown", "value"),
     ],
 )
-def update_graph(datePicked, selectedLocation):
+def update_map_graph(selected_location) -> 'go.Figure':
+    """
+    Update a map graph with selected main location data and position.
+
+    Parameters
+    ----------
+    selected_location: str, required
+        Main selected location, default is None -> POLAND.
+
+    Returns
+    -------
+    go.Figure with updated data.
+    """
     zoom = 4.0
     bearing = 0
 
-    if selectedLocation:
-        latInitial = float(list_of_locations[selectedLocation]["lat"])
-        lonInitial = float(list_of_locations[selectedLocation]["lon"])
-        text_data = client.stream_live(country=client.Countries.__dict__[selectedLocation])
+    # note: update information of the selected location (text on the map)
+    if selected_location:
+        initial_lat = float(data_manager.locations[selected_location]["lat"])
+        initial_lon = float(data_manager.locations[selected_location]["lon"])
+        text_data = data_manager.client.stream_live(country=data_manager.client.Countries.__dict__[selected_location])
         text = (f"Confirmed: {text_data['Confirmed'].values[-1]} "
                 f"Deaths: {text_data['Deaths'].values[-1]} "
                 f"Recovered: {text_data['Recovered'].values[-1]} "
                 f"Active: {text_data['Active'].values[-1]}")
+    # --- end note
 
+    # note: if main location is empty, take default one -> POLAND
     else:
-        latInitial = float(list_of_locations['POLAND']["lat"])
-        lonInitial = float(list_of_locations['POLAND']["lon"])
-        text_data = client.stream_live(country=client.Countries.POLAND)
+        initial_lat = float(data_manager.locations['POLAND']["lat"])
+        initial_lon = float(data_manager.locations['POLAND']["lon"])
+        text_data = data_manager.client.stream_live(country=data_manager.client.Countries.POLAND)
         text = (f"Confirmed: {text_data['Confirmed'].values[-1]} "
                 f"Deaths: {text_data['Deaths'].values[-1]} "
                 f"Recovered: {text_data['Recovered'].values[-1]} "
                 f"Active: {text_data['Active'].values[-1]}")
+    # --- end note
 
     return go.Figure(
         data=[
             # Plot of important locations on the map
             Scattermapbox(
-                lat=[list_of_locations[i]["lat"] for i in list_of_locations],
-                lon=[list_of_locations[i]["lon"] for i in list_of_locations],
+                lat=[data_manager.locations[i]["lat"] for i in data_manager.locations],
+                lon=[data_manager.locations[i]["lon"] for i in data_manager.locations],
                 mode="markers",
                 hoverinfo="text",
-                text=[i for i in list_of_locations],
+                text=[i for i in data_manager.locations],
                 marker=dict(size=8, color="#ffa0a0"),
             ),
             # Data for all rides based on date and time
             Scattermapbox(
-                lat=[latInitial],
-                lon=[lonInitial],
+                lat=[initial_lat],
+                lon=[initial_lon],
                 mode="markers",
                 hoverinfo="lat+lon+text",
                 text=text,
@@ -555,7 +556,7 @@ def update_graph(datePicked, selectedLocation):
             showlegend=False,
             mapbox=dict(
                 accesstoken=mapbox_access_token,
-                center=dict(lat=latInitial, lon=lonInitial),
+                center=dict(lat=initial_lat, lon=initial_lon),
                 style="dark",
                 bearing=bearing,
                 zoom=zoom,
@@ -568,8 +569,8 @@ def update_graph(datePicked, selectedLocation):
                                 args=[
                                     {
                                         "mapbox.zoom": 4,
-                                        "mapbox.center.lon": str(list_of_locations['POLAND']["lon"]),
-                                        "mapbox.center.lat": str(list_of_locations['POLAND']["lat"]),
+                                        "mapbox.center.lon": str(data_manager.locations['POLAND']["lon"]),
+                                        "mapbox.center.lat": str(data_manager.locations['POLAND']["lat"]),
                                         "mapbox.bearing": 0,
                                         "mapbox.style": "dark",
                                     }
