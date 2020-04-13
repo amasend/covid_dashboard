@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 from typing import List
+import sys
 
 import dash
 import dash_core_components as dcc
@@ -9,6 +10,7 @@ from dash.dependencies import Input, Output
 from plotly import graph_objs as go
 from plotly.graph_objs import *
 
+sys.path.append('../..')
 from covid_dashboard.managers.data_manager import DataManager
 
 # initialize data manager
@@ -38,7 +40,13 @@ app.layout = html.Div(
                         ),
                         html.H2("COVID-19 DATA"),
                         html.P(
-                            """You can select different starting day here, also you can chose a country to show."""
+                            """
+                            You can select a start day to apply on a graph, 
+                            country location to analyze, 
+                            second country to compare with, 
+                            data transformation to apply 
+                            and number os registered cases to start with.
+                            """
                         ),
                         html.Div(
                             className="div-for-dropdown",

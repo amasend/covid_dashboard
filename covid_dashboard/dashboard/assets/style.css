@@ -95,6 +95,13 @@ a {
   font-size: 14px;
 }
 
+#number-of-cases{
+  background-color: #1e1e1e;
+  font-family: "Open Sans";
+  font-weight: 400;
+  color: #dbdbdb;
+  border: 0.5px solid #dbdbdb44;
+}
 
 #date {
   background-color: #1e1e1e;
