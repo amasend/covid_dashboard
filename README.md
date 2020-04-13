@@ -1,5 +1,5 @@
 ## DESCRIPTION
-`covid_dashboard` is an python application based on a `dash` framework.
+`covid_dashboard` is a python application based on a `dash` framework.
 It presents a user interface to analyze data gathered from:
 [covid19api.com](https://documenter.getpostman.com/view/10808728/SzS8rjbc?version=latest)
 
