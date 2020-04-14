@@ -25,3 +25,6 @@ and go to `127.0.0.1:8050` in your browser.
 
 ## POLAND vs CHINA logarithmic started from ~ 100 confirmed cases
 ![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/poland_china_log_100.png)
+
+## CHINA DAILY % CHANGE
+![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/china_pct_daily_change.png)
