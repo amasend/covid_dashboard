@@ -11,7 +11,7 @@ You need to install a docker on your system, please refer to `docker` installati
  https://docs.docker.com/get-docker/  
 
 After docker installation just run:
-`docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.0`
+`docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.1`
 and go to `127.0.0.1:8050` in your browser.
 
 ## Main Screen
@@ -28,3 +28,8 @@ and go to `127.0.0.1:8050` in your browser.
 
 ## CHINA DAILY % CHANGE
 ![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/china_pct_daily_change.png)
+
+## Docker container release history:
+`1.1` - added support for bar plots (only main selected country), 
+bar plots show a daily % change for each category of data  
+`1.0` - initial base container
