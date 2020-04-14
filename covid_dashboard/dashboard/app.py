@@ -278,6 +278,13 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
     data_active_tmp = data_active.loc[date_picked:]
     # --- end note
 
+    # note: compute daily percentage change
+    data_active_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_active_tmp['Cases'])
+    data_confirmed_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_manager.data_confirmed_tmp['Cases'])
+    data_recovered_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_manager.data_recovered_tmp['Cases'])
+    data_deaths_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_manager.data_deaths_tmp['Cases'])
+    # --- end note
+
     # to the same as above but for second location data
     if selected_location2:
         data_active2 = data_manager.data_confirmed2.copy()
@@ -295,6 +302,17 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
         data_manager.data_recovered_tmp2 = data_manager.data_recovered2.loc[date_picked:]
         data_manager.data_deaths_tmp2 = data_manager.data_deaths2.loc[date_picked:]
         data_active_tmp2 = data_active2.loc[date_picked:]
+
+        # note: compute daily percentage change
+        data_active_tmp_pct2 = data_manager.compute_daily_growth_percentage(
+            data=data_active_tmp2['Cases'])
+        data_confirmed_tmp_pct2 = data_manager.compute_daily_growth_percentage(
+            data=data_manager.data_confirmed_tmp2['Cases'])
+        data_recovered_tmp_pct2 = data_manager.compute_daily_growth_percentage(
+            data=data_manager.data_recovered_tmp2['Cases'])
+        data_deaths_tmp_pct2 = data_manager.compute_daily_growth_percentage(
+            data=data_manager.data_deaths_tmp2['Cases'])
+        # --- end note
     # --- end note
 
     # note: data transformation part per user choice
@@ -384,6 +402,15 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
         yaxis=dict(
             showgrid=False
         ),
+        yaxis2=dict(
+            title='Daily % change',
+            titlefont={'color': 'rgb(148, 103, 189)'},
+            tickfont={'color': 'rgb(148, 103, 189)'},
+            overlaying='y',
+            side='right',
+            showgrid=False,
+            position=0.97
+        )
     )
 
     # prepare each graph layer
@@ -427,6 +454,54 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
             mode="lines+markers",
             marker=dict(color="red", symbol="circle-x", size=5),
             name=f'Deaths {selected_location if selected_location else "POLAND"}',
+        ),
+        go.Bar(
+            name=f'Active daily % change {selected_location if selected_location else "POLAND"}',
+            x=data_active_tmp.index,
+            y=data_active_tmp_pct,
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Change</b>: %{y}%',
+            opacity=0.2,
+            yaxis='y2',
+            offsetgroup=0,
+            marker_color='white'
+        ),
+        go.Bar(
+            name=f'Confirmed daily % change {selected_location if selected_location else "POLAND"}',
+            x=data_manager.data_confirmed_tmp.index,
+            y=data_confirmed_tmp_pct,
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Change</b>: %{y}%',
+            opacity=0.2,
+            yaxis='y2',
+            offsetgroup=1,
+            marker_color='yellow'
+        ),
+        go.Bar(
+            name=f'Recovered daily % change {selected_location if selected_location else "POLAND"}',
+            x=data_manager.data_recovered_tmp.index,
+            y=data_recovered_tmp_pct,
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Change</b>: %{y}%',
+            opacity=0.2,
+            yaxis='y2',
+            offsetgroup=0,
+            marker_color='green'
+        ),
+        go.Bar(
+            name=f'Deaths daily % change {selected_location if selected_location else "POLAND"}',
+            x=data_manager.data_deaths_tmp.index,
+            y=data_deaths_tmp_pct,
+            hovertemplate=
+            '<br><b>Date</b>: %{x}</br>' +
+            '<b>Change</b>: %{y}%',
+            opacity=0.2,
+            yaxis='y2',
+            offsetgroup=1,
+            marker_color='red'
         ),
     ]
 

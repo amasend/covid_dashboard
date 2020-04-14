@@ -3,6 +3,7 @@ import json
 
 from postman_covid19_sdk.client import APIClient
 from postman_covid19_sdk.utils.enums import StatusType
+import numpy as np
 from pandas import DataFrame
 
 if TYPE_CHECKING:
@@ -153,3 +154,21 @@ class DataManager:
             self.data_confirmed2.index = self.data_confirmed2.index.tz_localize(None)
             self.data_recovered2.index = self.data_recovered2.index.tz_localize(None)
             self.data_deaths2.index = self.data_deaths2.index.tz_localize(None)
+
+    @staticmethod
+    def compute_daily_growth_percentage(data: 'Series') -> 'Series':
+        """
+        Compute a percentage change from the previous number of cases.
+
+        Parameters
+        ----------
+        data: Series, required
+            Pandas Series with cases numbers.
+
+        Returns
+        -------
+        Pandas Series with percentage change
+        """
+        data = data.pct_change()
+        data.loc[np.isnan(data)] = 0
+        return data * 100
