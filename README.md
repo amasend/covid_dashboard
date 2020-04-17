@@ -3,7 +3,7 @@
 It presents a user interface to analyze data gathered from:
 [covid19api.com](https://documenter.getpostman.com/view/10808728/SzS8rjbc?version=latest)
 
-Dashboard is available via docker: `amasend/covid_dashboard:1.0`  
+Dashboard is available via docker: `amasend/covid_dashboard:1.2`  
 
 ## HOW TO RUN
 
@@ -11,7 +11,7 @@ You need to install a docker on your system, please refer to `docker` installati
  https://docs.docker.com/get-docker/  
 
 After docker installation just run:
-`docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.1`
+`docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.2`
 and go to `127.0.0.1:8050` in your browser.
 
 ## POLAND vs UKRAINE v1.2
