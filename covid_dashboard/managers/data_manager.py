@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING, List
 import json
+import datetime
 
 from postman_covid19_sdk.client import APIClient
 from postman_covid19_sdk.utils.enums import StatusType
 import numpy as np
 from pandas import DataFrame
+from pandas import concat
 
 if TYPE_CHECKING:
     from pandas import Series
@@ -14,6 +16,8 @@ class DataManager:
     def __init__(self):
         self.client = APIClient()
         self.locations = self.load_locations()
+        self.world_data = []
+        self.download_current_world_data()
 
         # note: data for the first location
         self.data_confirmed = None
@@ -190,3 +194,20 @@ class DataManager:
         data = data.diff()
         data.loc[np.isnan(data)] = 0
         return data
+
+    def download_current_world_data(self) -> None:
+        """
+        Download data for all countries from COVID19 API.
+        """
+        self.world_data = self.client.get_summary()['Countries']
+        lat, lon = [], []
+
+        for location in self.world_data.index.values:
+            data = self.locations.get(location.upper(), {'lat': None, 'lon': None})
+            lat.append(data['lat'])
+            lon.append(data['lon'])
+
+        self.world_data['Lat'] = lat
+        self.world_data['Lon'] = lon
+
+        self.world_data.dropna(axis=0, inplace=True)

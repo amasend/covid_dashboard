@@ -39,6 +39,29 @@ app.layout = html.Div(
                             className="logo", src=app.get_asset_url("covid.png")
                         ),
                         html.H2("COVID-19 DATA"),
+                        # Change to side-by-side for mobile layout
+                        html.Div(
+                            className="row",
+                            children=[
+                                html.Div(
+                                    className="div-for-dropdown",
+                                    children=[
+                                        dcc.Dropdown(
+                                            id="world-dropdown",
+                                            options=[
+                                                {"label": 'Total Confirmed', "value": 'TotalConfirmed'},
+                                                {"label": 'New Confirmed', "value": 'NewConfirmed'},
+                                                {"label": 'Total Recovered', "value": 'TotalRecovered'},
+                                                {"label": 'New Recovered', "value": 'NewRecovered'},
+                                                {"label": 'Total Deaths', "value": 'TotalDeaths'},
+                                                {"label": 'New Deaths', "value": 'NewDeaths'},
+                                            ],
+                                            placeholder="Select world data for heat-map",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
                         html.P(
                             """
                             Select a start date.
@@ -202,7 +225,7 @@ app.layout = html.Div(
                                 f"Poland graph of the Confirmed/Recovered/Deaths cases."
                             ],
                         ),
-                        dcc.Graph(id="line-graph"),
+                        dcc.Graph(id="line-graph")
                     ],
                 ),
             ],
@@ -465,6 +488,7 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
     layout = go.Layout(
         margin=go.layout.Margin(l=10, r=0, t=0, b=50),
         showlegend=True,
+        legend=dict(y=0.9),
         plot_bgcolor="#1e1e1e",
         paper_bgcolor="#1e1e1e",
         dragmode="select",
@@ -689,9 +713,10 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
     Output("map-graph", "figure"),
     [
         Input("location-dropdown", "value"),
+        Input("world-dropdown", "value"),
     ],
 )
-def update_map_graph(selected_location) -> 'go.Figure':
+def update_map_graph(selected_location, selected_world_data_type) -> 'go.Figure':
     """
     Update a map graph with selected main location data and position.
 
@@ -699,6 +724,9 @@ def update_map_graph(selected_location) -> 'go.Figure':
     ----------
     selected_location: str, required
         Main selected location, default is None -> POLAND.
+
+    selected_world_data_type: str, required
+        Type of the world data to display in the map (heat map).
 
     Returns
     -------
@@ -729,32 +757,52 @@ def update_map_graph(selected_location) -> 'go.Figure':
                 f"Active: {text_data['Active'].values[-1]}")
     # --- end note
 
+    data = [
+        # Plot of important locations on the map
+        Scattermapbox(
+            lat=[data_manager.locations[i]["lat"] for i in data_manager.locations],
+            lon=[data_manager.locations[i]["lon"] for i in data_manager.locations],
+            mode="markers",
+            hoverinfo="text",
+            text=[i for i in data_manager.locations],
+            marker=dict(size=8, color="#ffa0a0", showscale=False),
+        ),
+        # Data for all rides based on date and time
+        Scattermapbox(
+            lat=[initial_lat],
+            lon=[initial_lon],
+            mode="markers",
+            hoverinfo="lat+lon+text",
+            text=text,
+            marker=dict(
+                showscale=False,
+                color='red',
+                opacity=0.5,
+                size=30,
+            ),
+        ),
+    ]
+
+    if selected_world_data_type:
+        data.append(Densitymapbox(
+            name=selected_world_data_type,
+            lat=data_manager.world_data['Lat'],
+            lon=data_manager.world_data['Lon'],
+            z=data_manager.world_data[selected_world_data_type],
+            radius=100,
+            colorbar=dict(
+                title=selected_world_data_type,
+                x=0.93,
+                xpad=0,
+                nticks=24,
+                tickfont=dict(color="#d8d8d8"),
+                titlefont=dict(color="#d8d8d8"),
+                thicknessmode="pixels",
+            ),
+        ))
+
     return go.Figure(
-        data=[
-            # Plot of important locations on the map
-            Scattermapbox(
-                lat=[data_manager.locations[i]["lat"] for i in data_manager.locations],
-                lon=[data_manager.locations[i]["lon"] for i in data_manager.locations],
-                mode="markers",
-                hoverinfo="text",
-                text=[i for i in data_manager.locations],
-                marker=dict(size=8, color="#ffa0a0"),
-            ),
-            # Data for all rides based on date and time
-            Scattermapbox(
-                lat=[initial_lat],
-                lon=[initial_lon],
-                mode="markers",
-                hoverinfo="lat+lon+text",
-                text=text,
-                marker=dict(
-                    showscale=True,
-                    color='red',
-                    opacity=0.5,
-                    size=30,
-                ),
-            ),
-        ],
+        data=data,
         layout=Layout(
             autosize=True,
             margin=go.layout.Margin(l=0, r=35, t=0, b=0),
