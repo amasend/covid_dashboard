@@ -41,11 +41,7 @@ app.layout = html.Div(
                         html.H2("COVID-19 DATA"),
                         html.P(
                             """
-                            You can select a start day to apply on a graph, 
-                            country location to analyze, 
-                            second country to compare with, 
-                            data transformation to apply 
-                            and number os registered cases to start with.
+                            Select a start date.
                             """
                         ),
                         html.Div(
@@ -61,6 +57,11 @@ app.layout = html.Div(
                                     style={"border": "0px solid black"},
                                 )
                             ],
+                        ),
+                        html.P(
+                            """
+                            Select a country to show (default is POLAND).
+                            """
                         ),
                         # Change to side-by-side for mobile layout
                         html.Div(
@@ -82,6 +83,11 @@ app.layout = html.Div(
                                 ),
                             ],
                         ),
+                        html.P(
+                            """
+                            Select a country to compare with.
+                            """
+                        ),
                         # Change to side-by-side for mobile layout
                         html.Div(
                             className="row",
@@ -102,6 +108,13 @@ app.layout = html.Div(
                                 ),
                             ],
                         ),
+                        html.P(
+                            """
+                            Select a data transformation type, logarithmic is 
+                            better when you want to compare big and small countries together. 
+                            Percent - 100% is always \"Confirmed Cases\" on that day.
+                            """
+                        ),
                         # Change to side-by-side for mobile layout
                         html.Div(
                             className="row",
@@ -121,6 +134,37 @@ app.layout = html.Div(
                                     ],
                                 ),
                             ],
+                        ),
+                        html.P(
+                            """
+                            Select a type of the bar graph. 
+                            \"diff\" - shows difference between particular day and one before, 
+                            \"diff-in-%\" - shows the same, but in percentage
+                            """
+                        ),
+                        # Change to side-by-side for mobile layout
+                        html.Div(
+                            className="row",
+                            children=[
+                                html.Div(
+                                    className="div-for-dropdown",
+                                    children=[
+                                        dcc.Dropdown(
+                                            id="diff-type-dropdown",
+                                            options=[
+                                                {"label": 'diff', "value": 'diff'},
+                                                {"label": 'diff-in-%', "value": 'diff-in-%'}
+                                            ],
+                                            placeholder="Daily difference type (bar graph)",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
+                        html.P(
+                            """
+                            Select a number of cases to start plot with. This overrides the date property.
+                            """
                         ),
                         # Change to side-by-side for mobile layout
                         html.Div(
@@ -213,10 +257,11 @@ def update_middle_text(selected_location: str, selected_location2: str) -> List[
         Input("location-dropdown2", "value"),
         Input("type-dropdown", "value"),
         Input("number-of-cases", "value"),
+        Input("diff-type-dropdown", "value"),
     ],
 )
 def update_line_graph(date_picked: str, selected_location: str, selected_location2: str, selected_type: str,
-                      start_cases_num: str) -> 'go.Figure':
+                      start_cases_num: str, diff_type: str) -> 'go.Figure':
     """
     Update the main line graph with countries data and comparison.
 
@@ -278,12 +323,28 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
     data_active_tmp = data_active.loc[date_picked:]
     # --- end note
 
-    # note: compute daily percentage change
-    data_active_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_active_tmp['Cases'])
-    data_confirmed_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_manager.data_confirmed_tmp['Cases'])
-    data_recovered_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_manager.data_recovered_tmp['Cases'])
-    data_deaths_tmp_pct = data_manager.compute_daily_growth_percentage(data=data_manager.data_deaths_tmp['Cases'])
-    # --- end note
+    if diff_type == 'diff-in-%':
+        # note: compute daily percentage change
+        data_active_tmp_change = data_manager.compute_daily_growth_percentage(
+            data=data_active_tmp['Cases'])
+        data_confirmed_tmp_change = data_manager.compute_daily_growth_percentage(
+            data=data_manager.data_confirmed_tmp['Cases'])
+        data_recovered_tmp_change = data_manager.compute_daily_growth_percentage(
+            data=data_manager.data_recovered_tmp['Cases'])
+        data_deaths_tmp_change = data_manager.compute_daily_growth_percentage(
+            data=data_manager.data_deaths_tmp['Cases'])
+        # --- end note
+    else:
+        # note: compute daily change
+        data_active_tmp_change = data_manager.compute_daily_growth(
+            data=data_active_tmp['Cases'])
+        data_confirmed_tmp_change = data_manager.compute_daily_growth(
+            data=data_manager.data_confirmed_tmp['Cases'])
+        data_recovered_tmp_change = data_manager.compute_daily_growth(
+            data=data_manager.data_recovered_tmp['Cases'])
+        data_deaths_tmp_change = data_manager.compute_daily_growth(
+            data=data_manager.data_deaths_tmp['Cases'])
+        # --- end note
 
     # to the same as above but for second location data
     if selected_location2:
@@ -303,16 +364,28 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
         data_manager.data_deaths_tmp2 = data_manager.data_deaths2.loc[date_picked:]
         data_active_tmp2 = data_active2.loc[date_picked:]
 
-        # note: compute daily percentage change
-        data_active_tmp_pct2 = data_manager.compute_daily_growth_percentage(
-            data=data_active_tmp2['Cases'])
-        data_confirmed_tmp_pct2 = data_manager.compute_daily_growth_percentage(
-            data=data_manager.data_confirmed_tmp2['Cases'])
-        data_recovered_tmp_pct2 = data_manager.compute_daily_growth_percentage(
-            data=data_manager.data_recovered_tmp2['Cases'])
-        data_deaths_tmp_pct2 = data_manager.compute_daily_growth_percentage(
-            data=data_manager.data_deaths_tmp2['Cases'])
-        # --- end note
+        if diff_type == 'diff-in-%':
+            # note: compute daily percentage change
+            data_active_tmp_change2 = data_manager.compute_daily_growth_percentage(
+                data=data_active_tmp2['Cases'])
+            data_confirmed_tmp_change2 = data_manager.compute_daily_growth_percentage(
+                data=data_manager.data_confirmed_tmp2['Cases'])
+            data_recovered_tmp_change2 = data_manager.compute_daily_growth_percentage(
+                data=data_manager.data_recovered_tmp2['Cases'])
+            data_deaths_tmp_change2 = data_manager.compute_daily_growth_percentage(
+                data=data_manager.data_deaths_tmp2['Cases'])
+            # --- end note
+        else:
+            # note: compute daily change
+            data_active_tmp_change2 = data_manager.compute_daily_growth(
+                data=data_active_tmp2['Cases'])
+            data_confirmed_tmp_change2 = data_manager.compute_daily_growth(
+                data=data_manager.data_confirmed_tmp2['Cases'])
+            data_recovered_tmp_change2 = data_manager.compute_daily_growth(
+                data=data_manager.data_recovered_tmp2['Cases'])
+            data_deaths_tmp_change2 = data_manager.compute_daily_growth(
+                data=data_manager.data_deaths_tmp2['Cases'])
+            # --- end note
     # --- end note
 
     # note: data transformation part per user choice
@@ -396,20 +469,21 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
         paper_bgcolor="#1e1e1e",
         dragmode="select",
         font=dict(color="white"),
+        barmode='group',
         xaxis=dict(
             showgrid=False
         ),
         yaxis=dict(
-            showgrid=False
+            showgrid=False,
+            overlaying='y2',
+            rangemode='tozero',
         ),
         yaxis2=dict(
-            title='Daily % change',
-            titlefont={'color': 'rgb(148, 103, 189)'},
-            tickfont={'color': 'rgb(148, 103, 189)'},
-            overlaying='y',
+            title=f'Daily {"%" if diff_type == "diff-in-%" else ""} change',
             side='right',
             showgrid=False,
-            position=0.97
+            position=0.96,
+            rangemode='tozero',
         )
     )
 
@@ -456,52 +530,52 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
             name=f'Deaths {selected_location if selected_location else "POLAND"}',
         ),
         go.Bar(
-            name=f'Active daily % change {selected_location if selected_location else "POLAND"}',
+            name=f'Active daily {"%" if diff_type == "diff-in-%" else ""} change {selected_location if selected_location else "POLAND"}',
             x=data_active_tmp.index,
-            y=data_active_tmp_pct,
+            y=data_active_tmp_change,
             hovertemplate=
             '<br><b>Date</b>: %{x}</br>' +
-            '<b>Change</b>: %{y}%',
-            opacity=0.2,
+            '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+            opacity=1,
             yaxis='y2',
             offsetgroup=0,
-            marker_color='white'
+            marker_color='rgb(56, 30, 24)',
         ),
         go.Bar(
-            name=f'Confirmed daily % change {selected_location if selected_location else "POLAND"}',
+            name=f'Confirmed daily {"%" if diff_type == "diff-in-%" else ""} change {selected_location if selected_location else "POLAND"}',
             x=data_manager.data_confirmed_tmp.index,
-            y=data_confirmed_tmp_pct,
+            y=data_confirmed_tmp_change,
             hovertemplate=
             '<br><b>Date</b>: %{x}</br>' +
-            '<b>Change</b>: %{y}%',
-            opacity=0.2,
+            '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+            opacity=1,
             yaxis='y2',
             offsetgroup=1,
-            marker_color='yellow'
+            marker_color='rgb(196, 171, 38)',
         ),
         go.Bar(
-            name=f'Recovered daily % change {selected_location if selected_location else "POLAND"}',
+            name=f'Recovered daily {"%" if diff_type != "diff" else ""} change {selected_location if selected_location else "POLAND"}',
             x=data_manager.data_recovered_tmp.index,
-            y=data_recovered_tmp_pct,
+            y=data_recovered_tmp_change,
             hovertemplate=
             '<br><b>Date</b>: %{x}</br>' +
-            '<b>Change</b>: %{y}%',
-            opacity=0.2,
+            '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+            opacity=1,
             yaxis='y2',
-            offsetgroup=0,
-            marker_color='green'
+            offsetgroup=2,
+            marker_color='rgb(0, 66, 0)',
         ),
         go.Bar(
-            name=f'Deaths daily % change {selected_location if selected_location else "POLAND"}',
+            name=f'Deaths daily {"%" if diff_type == "diff-in-%" else ""} change {selected_location if selected_location else "POLAND"}',
             x=data_manager.data_deaths_tmp.index,
-            y=data_deaths_tmp_pct,
+            y=data_deaths_tmp_change,
             hovertemplate=
             '<br><b>Date</b>: %{x}</br>' +
-            '<b>Change</b>: %{y}%',
-            opacity=0.2,
+            '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+            opacity=1,
             yaxis='y2',
-            offsetgroup=1,
-            marker_color='red'
+            offsetgroup=3,
+            marker_color='rgb(96, 0, 0)',
         ),
     ]
 
@@ -552,6 +626,54 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
                     marker=dict(color="magenta", symbol="circle-x", size=5, opacity=0.5),
                     line=dict(dash='dash'),
                     name=f'Deaths {selected_location2}',
+                ),
+                go.Bar(
+                    name=f'Active daily {"%" if diff_type == "diff-in-%" else ""} change {selected_location2}',
+                    x=data_active_tmp2.index,
+                    y=data_active_tmp_change2,
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+                    opacity=1,
+                    yaxis='y2',
+                    offsetgroup=1,
+                    marker_color='rgb(91, 6, 155)',
+                ),
+                go.Bar(
+                    name=f'Confirmed daily {"%" if diff_type == "diff-in-%" else ""} change {selected_location2}',
+                    x=data_manager.data_confirmed_tmp2.index,
+                    y=data_confirmed_tmp_change2,
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+                    opacity=1,
+                    yaxis='y2',
+                    offsetgroup=2,
+                    marker_color='rgb(91, 130, 155)',
+                ),
+                go.Bar(
+                    name=f'Recovered daily {"%" if diff_type == "diff-in-%" else ""} change {selected_location2}',
+                    x=data_manager.data_recovered_tmp2.index,
+                    y=data_recovered_tmp_change2,
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+                    opacity=1,
+                    yaxis='y2',
+                    offsetgroup=3,
+                    marker_color='rgb(196, 183, 189)',
+                ),
+                go.Bar(
+                    name=f'Deaths daily {"%" if diff_type == "diff-in-%" else ""} change {selected_location2}',
+                    x=data_manager.data_deaths_tmp2.index,
+                    y=data_deaths_tmp_change2,
+                    hovertemplate=
+                    '<br><b>Date</b>: %{x}</br>' +
+                    '<b>Change</b>: %{y}' + f'{"%" if diff_type == "diff-in-%" else ""}',
+                    opacity=1,
+                    yaxis='y2',
+                    offsetgroup=4,
+                    marker_color='rgb(107, 130, 118)',
                 ),
             ]
         )

@@ -172,3 +172,21 @@ class DataManager:
         data = data.pct_change()
         data.loc[np.isnan(data)] = 0
         return data * 100
+
+    @staticmethod
+    def compute_daily_growth(data: 'Series') -> 'Series':
+        """
+        Compute s change from the previous number of cases.
+
+        Parameters
+        ----------
+        data: Series, required
+            Pandas Series with cases numbers.
+
+        Returns
+        -------
+        Pandas Series with daily change
+        """
+        data = data.diff()
+        data.loc[np.isnan(data)] = 0
+        return data
