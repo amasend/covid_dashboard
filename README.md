@@ -38,7 +38,7 @@ and go to `127.0.0.1:8050` in your browser.
 ![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/poland_china_log_100.png)
 
 ## Docker container release history:
-`1.4` - added UI revision to be persisted, corrected some locations on map  
+`1.4` - added UI revision to be persisted, corrected some locations on map, change in log scale and yaxis info, updated hover info for heat-map  
 `1.3` - added heat-map with world data  
 `1.2` - changed main screen with descriptions, added option to select bar graph type (normal diff or with %)  
 `1.1` - added support for bar plots (only main selected country), 
