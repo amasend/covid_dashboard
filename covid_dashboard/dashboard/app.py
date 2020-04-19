@@ -494,6 +494,7 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
         dragmode="select",
         font=dict(color="white"),
         barmode='group',
+        uirevision=True,
         xaxis=dict(
             showgrid=False
         ),
