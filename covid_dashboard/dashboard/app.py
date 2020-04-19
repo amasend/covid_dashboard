@@ -9,6 +9,7 @@ import numpy as np
 from dash.dependencies import Input, Output
 from plotly import graph_objs as go
 from plotly.graph_objs import *
+import pandas as pd
 
 sys.path.append('../..')
 from covid_dashboard.managers.data_manager import DataManager
@@ -55,6 +56,12 @@ app.layout = html.Div(
                                                 {"label": 'New Recovered', "value": 'NewRecovered'},
                                                 {"label": 'Total Deaths', "value": 'TotalDeaths'},
                                                 {"label": 'New Deaths', "value": 'NewDeaths'},
+                                                {"label": 'Total Confirmed per 1 mln', "value": 'TotalConfirmed1mln'},
+                                                {"label": 'New Confirmed per 1 mln', "value": 'NewConfirmed1mln'},
+                                                {"label": 'Total Recovered per 1 mln', "value": 'TotalRecovered1mln'},
+                                                {"label": 'New Recovered per 1 mln', "value": 'NewRecovered1mln'},
+                                                {"label": 'Total Deaths per 1 mln', "value": 'TotalDeaths1mln'},
+                                                {"label": 'New Deaths per 1 mln', "value": 'NewDeaths1mln'},
                                             ],
                                             placeholder="Select world data for heat-map",
                                         ),
@@ -135,7 +142,7 @@ app.layout = html.Div(
                             """
                             Select a data transformation type, logarithmic is 
                             better when you want to compare big and small countries together. 
-                            Percent - 100% is always \"Confirmed Cases\" on that day.
+                            Percent - 100% is always \"Confirmed Cases\" on that day. million - cases per 1mln population.
                             """
                         ),
                         # Change to side-by-side for mobile layout
@@ -151,6 +158,7 @@ app.layout = html.Div(
                                                 {"label": 'linear', "value": 'linear'},
                                                 {"label": 'log', "value": 'log'},
                                                 {"label": 'percent', "value": 'percent'},
+                                                {"label": 'million', "value": 'per million'},
                                             ],
                                             placeholder="Select a graph type",
                                         ),
@@ -306,6 +314,7 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
         Number of cases picked by the user on the panel. This indicates from where to start plotting a graph.
         Could be useful to compare situation in the countries.
     """
+
     # note: if user picked up a number of cases, we should turn off date filter
     if start_cases_num is not None:
         date_picked = dt.strptime(str(dt(2020, 1, 22).date()), "%Y-%m-%d")
@@ -439,6 +448,7 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
             data_active_tmp2['Cases'].loc[np.isneginf(data_active_tmp2['Cases'])] = 0
 
     elif selected_type == 'percent':
+
         data_manager.data_recovered_tmp['Cases'] = data_manager.data_recovered['Cases'] / data_manager.data_confirmed[
             'Cases']
         data_manager.data_recovered_tmp['Cases'].loc[np.isnan(data_manager.data_recovered_tmp['Cases'])] = 0
@@ -468,6 +478,39 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
             data_manager.data_confirmed_tmp2['Cases'] = (data_manager.data_confirmed2['Cases'] /
                                                          data_manager.data_confirmed2['Cases'])
             data_manager.data_confirmed_tmp2['Cases'].loc[np.isnan(data_manager.data_confirmed_tmp2['Cases'])] = 0
+    # --- end note
+
+    elif selected_type == 'per million':
+
+        if selected_location is None:
+            selected_location_ = 'POLAND'
+        else:
+            selected_location_ = selected_location
+
+        data_manager.data_recovered_tmp['Cases'] = (1_000_000 * data_manager.data_recovered['Cases'] /
+                                                    int(data_manager.locations[selected_location_]['population']))
+
+        data_manager.data_deaths_tmp['Cases'] = (1_000_000 * data_manager.data_deaths['Cases'] /
+                                                 int(data_manager.locations[selected_location_]['population']))
+
+        data_active_tmp['Cases'] = (1_000_000 * data_active['Cases'] /
+                                    int(data_manager.locations[selected_location_]['population']))
+
+        data_manager.data_confirmed_tmp['Cases'] = (1_000_000 * data_manager.data_confirmed['Cases'] /
+                                                    int(data_manager.locations[selected_location_]['population']))
+
+        if selected_location2:
+            data_manager.data_recovered_tmp2['Cases'] = (1_000_000 * data_manager.data_recovered2['Cases'] /
+                                                         int(data_manager.locations[selected_location2]['population']))
+
+            data_manager.data_deaths_tmp2['Cases'] = (1_000_000 * data_manager.data_deaths2['Cases'] /
+                                                      int(data_manager.locations[selected_location2]['population']))
+
+            data_active_tmp2['Cases'] = (1_000_000 * data_active2['Cases'] /
+                                         int(data_manager.locations[selected_location2]['population']))
+
+            data_manager.data_confirmed_tmp2['Cases'] = (1_000_000 * data_manager.data_confirmed2['Cases'] /
+                                                         int(data_manager.locations[selected_location2]['population']))
     # --- end note
 
     # note: reset date index to numerical only if user specified starting number of cases
@@ -789,13 +832,34 @@ def update_map_graph(selected_location, selected_world_data_type) -> 'go.Figure'
     ]
 
     if selected_world_data_type:
+        # note: compute per 1 mln population
+        if selected_world_data_type in ['TotalConfirmed1mln', 'NewConfirmed1mln', 'TotalRecovered1mln',
+                                        'NewRecovered1mln', 'TotalDeaths1mln', 'NewDeaths1mln']:
+            world_data = data_manager.world_data.copy()
+            data_populations = []
+
+            for location in world_data.index.values:
+                data_populations.append(
+                    int(data_manager.locations[
+                            location.strip().upper().replace(' ', '_').replace(',', '_')]['population']))
+
+            world_data.reset_index(inplace=True)
+            world_data[selected_world_data_type.split('1')[0]] = (1_000_000 *
+                                                                  world_data[selected_world_data_type.split('1')[0]] /
+                                                                  pd.Series(data_populations))
+            z = world_data[selected_world_data_type.split('1')[0]]
+
+        else:
+            z = data_manager.world_data[selected_world_data_type]
+        # --- end note
+
         data.append(Densitymapbox(
             hovertemplate=
             f'<br><b>{selected_world_data_type}</b>:' + ' %{z}</br>',
             name=selected_world_data_type,
             lat=data_manager.world_data['Lat'],
             lon=data_manager.world_data['Lon'],
-            z=data_manager.world_data[selected_world_data_type],
+            z=z,
             radius=50,
             colorbar=dict(
                 title=selected_world_data_type,

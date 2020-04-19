@@ -106,31 +106,31 @@ class DataManager:
         location: str/None, required
             Location name, if None data for the default location will be downloaded (POLAND)
         """
-        if location:
+        try:
             self.data_confirmed = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.__dict__[location]))
+                country=self.client.Countries.__dict__[location] if location else self.client.Countries.POLAND))
+            self.data_confirmed['Cases'] = self.clean_data(data=self.data_confirmed['Cases'])
+            self.data_confirmed.index = self.data_confirmed.index.tz_localize(None)
+        except Exception:
+            self.data_confirmed = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
+
+        try:
             self.data_recovered = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.__dict__[location],
+                country=self.client.Countries.__dict__[location] if location else self.client.Countries.POLAND,
                 status=StatusType.RECOVERED))
+            self.data_recovered['Cases'] = self.clean_data(data=self.data_recovered['Cases'])
+            self.data_recovered.index = self.data_recovered.index.tz_localize(None)
+        except Exception:
+            self.data_recovered = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
+
+        try:
             self.data_deaths = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.__dict__[location],
+                country=self.client.Countries.__dict__[location] if location else self.client.Countries.POLAND,
                 status=StatusType.DEATHS))
-
-        else:
-            self.data_confirmed = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.POLAND))
-            self.data_recovered = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.POLAND, status=StatusType.RECOVERED))
-            self.data_deaths = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.POLAND, status=StatusType.DEATHS))
-
-        self.data_confirmed['Cases'] = self.clean_data(data=self.data_confirmed['Cases'])
-        self.data_recovered['Cases'] = self.clean_data(data=self.data_recovered['Cases'])
-        self.data_deaths['Cases'] = self.clean_data(data=self.data_deaths['Cases'])
-
-        self.data_confirmed.index = self.data_confirmed.index.tz_localize(None)
-        self.data_recovered.index = self.data_recovered.index.tz_localize(None)
-        self.data_deaths.index = self.data_deaths.index.tz_localize(None)
+            self.data_deaths['Cases'] = self.clean_data(data=self.data_deaths['Cases'])
+            self.data_deaths.index = self.data_deaths.index.tz_localize(None)
+        except Exception:
+            self.data_deaths = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
     def download_data_for_location_two(self, location) -> None:
         """
@@ -142,22 +142,31 @@ class DataManager:
             Location name.
         """
         if location:
-            self.data_confirmed2 = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.__dict__[location]))
-            self.data_recovered2 = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.__dict__[location],
-                status=StatusType.RECOVERED))
-            self.data_deaths2 = self.remove_duplicated(self.client.get_by_country(
-                country=self.client.Countries.__dict__[location],
-                status=StatusType.DEATHS))
+            try:
+                self.data_confirmed2 = self.remove_duplicated(self.client.get_by_country(
+                    country=self.client.Countries.__dict__[location]))
+                self.data_confirmed2['Cases'] = self.clean_data(data=self.data_confirmed2['Cases'])
+                self.data_confirmed2.index = self.data_confirmed2.index.tz_localize(None)
+            except Exception:
+                self.data_confirmed2 = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
-            self.data_confirmed2['Cases'] = self.clean_data(data=self.data_confirmed2['Cases'])
-            self.data_recovered2['Cases'] = self.clean_data(data=self.data_recovered2['Cases'])
-            self.data_deaths2['Cases'] = self.clean_data(data=self.data_deaths2['Cases'])
+            try:
+                self.data_recovered2 = self.remove_duplicated(self.client.get_by_country(
+                    country=self.client.Countries.__dict__[location],
+                    status=StatusType.RECOVERED))
+                self.data_recovered2['Cases'] = self.clean_data(data=self.data_recovered2['Cases'])
+                self.data_recovered2.index = self.data_recovered2.index.tz_localize(None)
+            except Exception:
+                self.data_recovered2 = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
-            self.data_confirmed2.index = self.data_confirmed2.index.tz_localize(None)
-            self.data_recovered2.index = self.data_recovered2.index.tz_localize(None)
-            self.data_deaths2.index = self.data_deaths2.index.tz_localize(None)
+            try:
+                self.data_deaths2 = self.remove_duplicated(self.client.get_by_country(
+                    country=self.client.Countries.__dict__[location],
+                    status=StatusType.DEATHS))
+                self.data_deaths2['Cases'] = self.clean_data(data=self.data_deaths2['Cases'])
+                self.data_deaths2.index = self.data_deaths2.index.tz_localize(None)
+            except Exception:
+                self.data_deaths2 = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
     @staticmethod
     def compute_daily_growth_percentage(data: 'Series') -> 'Series':
