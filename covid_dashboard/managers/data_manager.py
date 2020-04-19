@@ -203,6 +203,7 @@ class DataManager:
         lat, lon = [], []
 
         for location in self.world_data.index.values:
+            location = location.strip().upper().replace(' ', '_').replace(',', '_')
             data = self.locations.get(location.upper(), {'lat': None, 'lon': None})
             lat.append(data['lat'])
             lon.append(data['lon'])
