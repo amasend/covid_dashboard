@@ -790,7 +790,7 @@ def update_map_graph(selected_location, selected_world_data_type) -> 'go.Figure'
             lat=data_manager.world_data['Lat'],
             lon=data_manager.world_data['Lon'],
             z=data_manager.world_data[selected_world_data_type],
-            radius=100,
+            radius=50,
             colorbar=dict(
                 title=selected_world_data_type,
                 x=0.93,
@@ -808,6 +808,7 @@ def update_map_graph(selected_location, selected_world_data_type) -> 'go.Figure'
             autosize=True,
             margin=go.layout.Margin(l=0, r=35, t=0, b=0),
             showlegend=False,
+            uirevision=True,
             mapbox=dict(
                 accesstoken=mapbox_access_token,
                 center=dict(lat=initial_lat, lon=initial_lon),
