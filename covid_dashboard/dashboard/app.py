@@ -487,29 +487,39 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
         else:
             selected_location_ = selected_location
 
-        data_manager.data_recovered_tmp['Cases'] = (1_000_000 * data_manager.data_recovered['Cases'] /
+        if int(data_manager.locations[selected_location_]['population']) < 1_000_000:
+            coefficient = 1
+        else:
+            coefficient = 1_000_000
+
+        data_manager.data_recovered_tmp['Cases'] = (coefficient * data_manager.data_recovered['Cases'] /
                                                     int(data_manager.locations[selected_location_]['population']))
 
-        data_manager.data_deaths_tmp['Cases'] = (1_000_000 * data_manager.data_deaths['Cases'] /
+        data_manager.data_deaths_tmp['Cases'] = (coefficient * data_manager.data_deaths['Cases'] /
                                                  int(data_manager.locations[selected_location_]['population']))
 
-        data_active_tmp['Cases'] = (1_000_000 * data_active['Cases'] /
+        data_active_tmp['Cases'] = (coefficient * data_active['Cases'] /
                                     int(data_manager.locations[selected_location_]['population']))
 
-        data_manager.data_confirmed_tmp['Cases'] = (1_000_000 * data_manager.data_confirmed['Cases'] /
+        data_manager.data_confirmed_tmp['Cases'] = (coefficient * data_manager.data_confirmed['Cases'] /
                                                     int(data_manager.locations[selected_location_]['population']))
 
         if selected_location2:
-            data_manager.data_recovered_tmp2['Cases'] = (1_000_000 * data_manager.data_recovered2['Cases'] /
+            if int(data_manager.locations[selected_location2]['population']) < 1_000_000:
+                coefficient = 1
+            else:
+                coefficient = 1_000_000
+
+            data_manager.data_recovered_tmp2['Cases'] = (coefficient * data_manager.data_recovered2['Cases'] /
                                                          int(data_manager.locations[selected_location2]['population']))
 
-            data_manager.data_deaths_tmp2['Cases'] = (1_000_000 * data_manager.data_deaths2['Cases'] /
+            data_manager.data_deaths_tmp2['Cases'] = (coefficient * data_manager.data_deaths2['Cases'] /
                                                       int(data_manager.locations[selected_location2]['population']))
 
-            data_active_tmp2['Cases'] = (1_000_000 * data_active2['Cases'] /
+            data_active_tmp2['Cases'] = (coefficient * data_active2['Cases'] /
                                          int(data_manager.locations[selected_location2]['population']))
 
-            data_manager.data_confirmed_tmp2['Cases'] = (1_000_000 * data_manager.data_confirmed2['Cases'] /
+            data_manager.data_confirmed_tmp2['Cases'] = (coefficient * data_manager.data_confirmed2['Cases'] /
                                                          int(data_manager.locations[selected_location2]['population']))
     # --- end note
 
@@ -837,14 +847,22 @@ def update_map_graph(selected_location, selected_world_data_type) -> 'go.Figure'
                                         'NewRecovered1mln', 'TotalDeaths1mln', 'NewDeaths1mln']:
             world_data = data_manager.world_data.copy()
             data_populations = []
+            coefficients = []
 
             for location in world_data.index.values:
-                data_populations.append(
-                    int(data_manager.locations[
-                            location.strip().upper().replace(' ', '_').replace(',', '_')]['population']))
+                location = location.strip().upper().replace(' ', '_').replace(',', '_')
+                population = int(data_manager.locations[location]['population'])
+
+                if population < 1_000_000:
+                    coefficient = 1
+                else:
+                    coefficient = 1_000_000
+
+                data_populations.append(population)
+                coefficients.append(coefficient)
 
             world_data.reset_index(inplace=True)
-            world_data[selected_world_data_type.split('1')[0]] = (1_000_000 *
+            world_data[selected_world_data_type.split('1')[0]] = (pd.Series(coefficients) *
                                                                   world_data[selected_world_data_type.split('1')[0]] /
                                                                   pd.Series(data_populations))
             z = world_data[selected_world_data_type.split('1')[0]]

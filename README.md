@@ -3,7 +3,7 @@
 It presents a user interface to analyze data gathered from:
 [covid19api.com](https://documenter.getpostman.com/view/10808728/SzS8rjbc?version=latest)
 
-Dashboard is available via docker: `amasend/covid_dashboard:1.5`  
+Dashboard is available via docker: `amasend/covid_dashboard:1.6`  
 
 ## HOW TO RUN
 
@@ -11,7 +11,7 @@ You need to install a docker on your system, please refer to `docker` installati
  https://docs.docker.com/get-docker/  
 
 After docker installation just run:
-`docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.5`
+`docker run -ti -p 8050:8050/tcp amasend/covid_dashboard:1.6`
 and go to `127.0.0.1:8050` in your browser.
 
 
@@ -38,6 +38,7 @@ and go to `127.0.0.1:8050` in your browser.
 ![image](https://raw.githubusercontent.com/amasend/covid_dashboard/master/screens/poland_china_log_100.png)
 
 ## Docker container release history:
+`1.6` - fix for data per 1mln population when population is lower than 1mln  
 `1.5` - added visualization per 1mln population in each country, better API error handling (some countries have corrupted data,
 eg. USA sometimes will not load because an API does not return data.)  
 `1.4` - added UI revision to be persisted, corrected some locations on map, change in log scale and yaxis info, updated hover info for heat-map  
