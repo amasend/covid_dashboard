@@ -499,6 +499,10 @@ def update_line_graph(date_picked: str, selected_location: str, selected_locatio
             showgrid=False
         ),
         yaxis=dict(
+            title=f'Number of Cases in {"linear" if selected_type is None else selected_type} scale',
+            position=0.04,
+            type='log' if selected_type == 'log' else 'linear',
+            title_standoff=25,
             showgrid=False,
             overlaying='y2',
             rangemode='tozero',
@@ -786,6 +790,8 @@ def update_map_graph(selected_location, selected_world_data_type) -> 'go.Figure'
 
     if selected_world_data_type:
         data.append(Densitymapbox(
+            hovertemplate=
+            f'<br><b>{selected_world_data_type}</b>:' + ' %{z}</br>',
             name=selected_world_data_type,
             lat=data_manager.world_data['Lat'],
             lon=data_manager.world_data['Lon'],
