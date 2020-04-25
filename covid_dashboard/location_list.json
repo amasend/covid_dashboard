@@ -1,0 +1,912 @@
+{
+  "AFGHANISTAN": {
+    "lat": "33.94",
+    "lon": "67.71",
+    "population": "35530081"
+  },
+  "ALBANIA": {
+    "lat": "41.15",
+    "lon": "20.17",
+    "population": "2930187"
+  },
+  "ALGERIA": {
+    "lat": "28.03",
+    "lon": "1.66",
+    "population": "41318142"
+  },
+  "ANDORRA": {
+    "lat": "42.55",
+    "lon": "1.6",
+    "population": "76965"
+  },
+  "ANGOLA": {
+    "lat": "-11.2",
+    "lon": "17.87",
+    "population": "29784193"
+  },
+  "ANTIGUA_AND_BARBUDA": {
+    "lat": "17.06",
+    "lon": "-61.8",
+    "population": "102012"
+  },
+  "ARGENTINA": {
+    "lat": "-38.42",
+    "lon": "-63.62",
+    "population": "44271041"
+  },
+  "ARMENIA": {
+    "lat": "40.07",
+    "lon": "45.04",
+    "population": "2930450"
+  },
+  "AUSTRALIA": {
+    "lat": "-33.87",
+    "lon": "151.21",
+    "population": "24450561"
+  },
+  "AUSTRIA": {
+    "lat": "47.52",
+    "lon": "14.55",
+    "population": "8735453"
+  },
+  "AZERBAIJAN": {
+    "lat": "40.14",
+    "lon": "47.58",
+    "population": "9827589"
+  },
+  "BAHAMAS": {
+    "lat": "25.03",
+    "lon": "-77.4",
+    "population": "395361"
+  },
+  "BAHRAIN": {
+    "lat": "25.93",
+    "lon": "50.64",
+    "population": "1492584"
+  },
+  "BANGLADESH": {
+    "lat": "23.68",
+    "lon": "90.36",
+    "population": "164669751"
+  },
+  "BARBADOS": {
+    "lat": "13.19",
+    "lon": "-59.54",
+    "population": "285719"
+  },
+  "BELARUS": {
+    "lat": "53.71",
+    "lon": "27.95",
+    "population": "9468338"
+  },
+  "BELGIUM": {
+    "lat": "50.5",
+    "lon": "4.47",
+    "population": "11429336"
+  },
+  "BELIZE": {
+    "lat": "17.19",
+    "lon": "-88.5",
+    "population": "374681"
+  },
+  "BENIN": {
+    "lat": "9.31",
+    "lon": "2.32",
+    "population": "11175692"
+  },
+  "BHUTAN": {
+    "lat": "27.51",
+    "lon": "90.43",
+    "population": "807610"
+  },
+  "BOLIVIA": {
+    "lat": "-16.29",
+    "lon": "-63.59",
+    "population": "11051600"
+  },
+  "BOSNIA_AND_HERZEGOVINA": {
+    "lat": "43.92",
+    "lon": "17.68",
+    "population": "3507017"
+  },
+  "BOTSWANA": {
+    "lat": "-22.33",
+    "lon": "24.68",
+    "population": "2291661"
+  },
+  "BRAZIL": {
+    "lat": "-14.24",
+    "lon": "-51.93",
+    "population": "209288278"
+  },
+  "BRUNEI_DARUSSALAM": {
+    "lat": "4.54",
+    "lon": "114.73",
+    "population": "428697"
+  },
+  "BULGARIA": {
+    "lat": "42.73",
+    "lon": "25.49",
+    "population": "7084571"
+  },
+  "BURKINA_FASO": {
+    "lat": "12.24",
+    "lon": "-1.56",
+    "population": "19193382"
+  },
+  "BURUNDI": {
+    "lat": "-3.37",
+    "lon": "29.92",
+    "population": "10864245"
+  },
+  "CAMBODIA": {
+    "lat": "12.57",
+    "lon": "104.99",
+    "population": "16005373"
+  },
+  "CANADA": {
+    "lat": "53.76",
+    "lon": "-98.81",
+    "population": "36624199"
+  },
+  "CAPE_VERDE": {
+    "lat": "16",
+    "lon": "-24.01",
+    "population": "546388"
+  },
+  "CENTRAL_AFRICAN_REPUBLIC": {
+    "lat": "6.61",
+    "lon": "20.94",
+    "population": "4659080"
+  },
+  "CHAD": {
+    "lat": "15.45",
+    "lon": "18.73",
+    "population": "14899994"
+  },
+  "CHILE": {
+    "lat": "-35.68",
+    "lon": "-71.54",
+    "population": "18054726"
+  },
+  "CHINA": {
+    "lat": "30.62",
+    "lon": "102.71",
+    "population": "1409517397"
+  },
+  "COLOMBIA": {
+    "lat": "4.57",
+    "lon": "-74.3",
+    "population": "49065615"
+  },
+  "CONGO_(BRAZZAVILLE)": {
+    "lat": "-0.23",
+    "lon": "15.83",
+    "population": "5260750"
+  },
+  "CONGO_(KINSHASA)": {
+    "lat": "-4.04",
+    "lon": "21.76",
+    "population": "5260750"
+  },
+  "COSTA_RICA": {
+    "lat": "9.75",
+    "lon": "-83.75",
+    "population": "4905769"
+  },
+  "CROATIA": {
+    "lat": "45.1",
+    "lon": "15.2",
+    "population": "4189353"
+  },
+  "CUBA": {
+    "lat": "21.52",
+    "lon": "-77.78",
+    "population": "11484636"
+  },
+  "CYPRUS": {
+    "lat": "35.13",
+    "lon": "33.43",
+    "population": "1179551"
+  },
+  "CZECH_REPUBLIC": {
+    "lat": "49.82",
+    "lon": "15.47",
+    "population": "10618303"
+  },
+  "C\u00d4TE_D'IVOIRE": {
+    "lat": "7.54",
+    "lon": "-5.55",
+    "population": "24960000"
+  },
+  "DENMARK": {
+    "lat": "61.89",
+    "lon": "-6.91",
+    "population": "5733551"
+  },
+  "DJIBOUTI": {
+    "lat": "11.83",
+    "lon": "42.59",
+    "population": "956985"
+  },
+  "DOMINICA": {
+    "lat": "15.41",
+    "lon": "-61.37",
+    "population": "73925"
+  },
+  "DOMINICAN_REPUBLIC": {
+    "lat": "18.74",
+    "lon": "-70.16",
+    "population": "73925"
+  },
+  "ECUADOR": {
+    "lat": "-1.83",
+    "lon": "-78.18",
+    "population": "16624858"
+  },
+  "EGYPT": {
+    "lat": "26.82",
+    "lon": "30.8",
+    "population": "97553151"
+  },
+  "EL_SALVADOR": {
+    "lat": "13.79",
+    "lon": "-88.9",
+    "population": "6377853"
+  },
+  "EQUATORIAL_GUINEA": {
+    "lat": "1.65",
+    "lon": "10.27",
+    "population": "1267689"
+  },
+  "ERITREA": {
+    "lat": "15.18",
+    "lon": "39.78",
+    "population": "5068831"
+  },
+  "ESTONIA": {
+    "lat": "58.6",
+    "lon": "25.01",
+    "population": "1309632"
+  },
+  "ETHIOPIA": {
+    "lat": "9.15",
+    "lon": "40.49",
+    "population": "104957438"
+  },
+  "FIJI": {
+    "lat": "-16.58",
+    "lon": "179.41",
+    "population": "905502"
+  },
+  "FINLAND": {
+    "lat": "61.92",
+    "lon": "25.75",
+    "population": "5523231"
+  },
+  "FRANCE": {
+    "lat": "48.92",
+    "lon": "2.94",
+    "population": "64979548"
+  },
+  "GABON": {
+    "lat": "-0.8",
+    "lon": "11.61",
+    "population": "2025137"
+  },
+  "GAMBIA": {
+    "lat": "13.44",
+    "lon": "-15.31",
+    "population": "2100568"
+  },
+  "GEORGIA": {
+    "lat": "42.32",
+    "lon": "43.36",
+    "population": "3912061"
+  },
+  "GERMANY": {
+    "lat": "51.17",
+    "lon": "10.45",
+    "population": "82114224"
+  },
+  "GHANA": {
+    "lat": "7.95",
+    "lon": "-1.02",
+    "population": "28833629"
+  },
+  "GREECE": {
+    "lat": "39.07",
+    "lon": "21.82",
+    "population": "11159773"
+  },
+  "GRENADA": {
+    "lat": "12.26",
+    "lon": "-61.6",
+    "population": "107825"
+  },
+  "GUATEMALA": {
+    "lat": "15.78",
+    "lon": "-90.23",
+    "population": "16913503"
+  },
+  "GUINEA": {
+    "lat": "9.95",
+    "lon": "-9.7",
+    "population": "12717176"
+  },
+  "GUINEA-BISSAU": {
+    "lat": "11.8",
+    "lon": "-15.18",
+    "population": "12717176"
+  },
+  "GUYANA": {
+    "lat": "4.86",
+    "lon": "-58.93",
+    "population": "777859"
+  },
+  "HAITI": {
+    "lat": "18.97",
+    "lon": "-72.29",
+    "population": "10981229"
+  },
+  "HOLY_SEE_(VATICAN_CITY_STATE)": {
+    "lat": "41.9",
+    "lon": "12.45",
+    "population": "1000"
+  },
+  "HONDURAS": {
+    "lat": "15.2",
+    "lon": "-86.24",
+    "population": "9265067"
+  },
+  "HUNGARY": {
+    "lat": "47.16",
+    "lon": "19.5",
+    "population": "9721559"
+  },
+  "ICELAND": {
+    "lat": "64.96",
+    "lon": "-19.02",
+    "population": "335025"
+  },
+  "INDIA": {
+    "lat": "20.59",
+    "lon": "78.96",
+    "population": "1339180127"
+  },
+  "INDONESIA": {
+    "lat": "-0.79",
+    "lon": "113.92",
+    "population": "263991379"
+  },
+  "IRAN__ISLAMIC_REPUBLIC_OF": {
+    "lat": "32.43",
+    "lon": "53.69",
+    "population": "81162788"
+  },
+  "IRAQ": {
+    "lat": "33.22",
+    "lon": "43.68",
+    "population": "38274618"
+  },
+  "IRELAND": {
+    "lat": "53.41",
+    "lon": "-8.24",
+    "population": "4761657"
+  },
+  "ISRAEL": {
+    "lat": "31.05",
+    "lon": "34.85",
+    "population": "8321570"
+  },
+  "ITALY": {
+    "lat": "41.87",
+    "lon": "12.57",
+    "population": "59359900"
+  },
+  "JAMAICA": {
+    "lat": "18.11",
+    "lon": "-77.3",
+    "population": "2890299"
+  },
+  "JAPAN": {
+    "lat": "36.2",
+    "lon": "138.25",
+    "population": "127484450"
+  },
+  "JORDAN": {
+    "lat": "30.59",
+    "lon": "36.24",
+    "population": "9702353"
+  },
+  "KAZAKHSTAN": {
+    "lat": "48.02",
+    "lon": "66.92",
+    "population": "18204499"
+  },
+  "KENYA": {
+    "lat": "-0.02",
+    "lon": "37.91",
+    "population": "49699862"
+  },
+  "KOREA_(SOUTH)": {
+    "lat": "35.91",
+    "lon": "127.77",
+    "population": "50982212"
+  },
+  "KUWAIT": {
+    "lat": "29.31",
+    "lon": "47.48",
+    "population": "4136528"
+  },
+  "KYRGYZSTAN": {
+    "lat": "41.2",
+    "lon": "74.77",
+    "population": "6045117"
+  },
+  "LAO_PDR": {
+    "lat": "19.86",
+    "lon": "102.5",
+    "population": "6858160"
+  },
+  "LATVIA": {
+    "lat": "56.88",
+    "lon": "24.6",
+    "population": "1949670"
+  },
+  "LEBANON": {
+    "lat": "33.85",
+    "lon": "35.86",
+    "population": "6082357"
+  },
+  "LIBERIA": {
+    "lat": "6.43",
+    "lon": "-9.43",
+    "population": "4731906"
+  },
+  "LIBYA": {
+    "lat": "26.34",
+    "lon": "17.23",
+    "population": "5605000"
+  },
+  "LIECHTENSTEIN": {
+    "lat": "47.17",
+    "lon": "9.56",
+    "population": "37922"
+  },
+  "LITHUANIA": {
+    "lat": "55.17",
+    "lon": "23.88",
+    "population": "2890297"
+  },
+  "LUXEMBOURG": {
+    "lat": "49.82",
+    "lon": "6.13",
+    "population": "583455"
+  },
+  "MACEDONIA__REPUBLIC_OF": {
+    "lat": "41.61",
+    "lon": "21.75",
+    "population": "2024000"
+  },
+  "MADAGASCAR": {
+    "lat": "-18.77",
+    "lon": "46.87",
+    "population": "25570895"
+  },
+  "MALAWI": {
+    "lat": "-13.25",
+    "lon": "34.3",
+    "population": "18622104"
+  },
+  "MALAYSIA": {
+    "lat": "4.21",
+    "lon": "101.98",
+    "population": "31624264"
+  },
+  "MALDIVES": {
+    "lat": "3.2",
+    "lon": "73.22",
+    "population": "436330"
+  },
+  "MALI": {
+    "lat": "17.57",
+    "lon": "-4",
+    "population": "18541980"
+  },
+  "MALTA": {
+    "lat": "35.94",
+    "lon": "14.38",
+    "population": "430835"
+  },
+  "MAURITANIA": {
+    "lat": "21.01",
+    "lon": "-10.94",
+    "population": "4420184"
+  },
+  "MAURITIUS": {
+    "lat": "-20.35",
+    "lon": "57.55",
+    "population": "1265138"
+  },
+  "MEXICO": {
+    "lat": "23.63",
+    "lon": "-102.55",
+    "population": "129163276"
+  },
+  "MOLDOVA": {
+    "lat": "47.41",
+    "lon": "28.37",
+    "population": "4051212"
+  },
+  "MONACO": {
+    "lat": "43.75",
+    "lon": "7.41",
+    "population": "38695"
+  },
+  "MONGOLIA": {
+    "lat": "46.86",
+    "lon": "103.85",
+    "population": "3075647"
+  },
+  "MONTENEGRO": {
+    "lat": "42.71",
+    "lon": "19.37",
+    "population": "631219"
+  },
+  "MOROCCO": {
+    "lat": "31.79",
+    "lon": "-7.09",
+    "population": "35739580"
+  },
+  "MOZAMBIQUE": {
+    "lat": "-18.67",
+    "lon": "35.53",
+    "population": "29668834"
+  },
+  "MYANMAR": {
+    "lat": "21.91",
+    "lon": "95.96",
+    "population": "53370609"
+  },
+  "NAMIBIA": {
+    "lat": "-22.96",
+    "lon": "18.49",
+    "population": "2533794"
+  },
+  "NEPAL": {
+    "lat": "28.39",
+    "lon": "84.12",
+    "population": "29304998"
+  },
+  "NETHERLANDS": {
+    "lat": "12.17",
+    "lon": "-68.99",
+    "population": "17035938"
+  },
+  "NEW_ZEALAND": {
+    "lat": "-40.9",
+    "lon": "174.89",
+    "population": "4705818"
+  },
+  "NICARAGUA": {
+    "lat": "12.87",
+    "lon": "-85.21",
+    "population": "6217581"
+  },
+  "NIGER": {
+    "lat": "17.61",
+    "lon": "8.08",
+    "population": "21477348"
+  },
+  "NIGERIA": {
+    "lat": "9.08",
+    "lon": "8.68",
+    "population": "21477348"
+  },
+  "NORWAY": {
+    "lat": "60.47",
+    "lon": "8.47",
+    "population": "5305383"
+  },
+  "OMAN": {
+    "lat": "21.51",
+    "lon": "55.92",
+    "population": "4636262"
+  },
+  "PAKISTAN": {
+    "lat": "30.38",
+    "lon": "69.35",
+    "population": "197015955"
+  },
+  "PALESTINIAN_TERRITORY": {
+    "lat": "31.95",
+    "lon": "35.23",
+    "population": "4920724"
+  },
+  "PANAMA": {
+    "lat": "8.54",
+    "lon": "-80.78",
+    "population": "4098587"
+  },
+  "PAPUA_NEW_GUINEA": {
+    "lat": "-6.31",
+    "lon": "143.96",
+    "population": "12717176"
+  },
+  "PARAGUAY": {
+    "lat": "-23.44",
+    "lon": "-58.44",
+    "population": "6811297"
+  },
+  "PERU": {
+    "lat": "-9.19",
+    "lon": "-75.02",
+    "population": "32165485"
+  },
+  "PHILIPPINES": {
+    "lat": "12.88",
+    "lon": "121.77",
+    "population": "104918090"
+  },
+  "POLAND": {
+    "lat": "51.92",
+    "lon": "19.15",
+    "population": "38170712"
+  },
+  "PORTUGAL": {
+    "lat": "39.4",
+    "lon": "-8.22",
+    "population": "10329506"
+  },
+  "QATAR": {
+    "lat": "25.35",
+    "lon": "51.18",
+    "population": "2639211"
+  },
+  "REPUBLIC_OF_KOSOVO": {
+    "lat": "42.6",
+    "lon": "20.9",
+    "population": "1920079"
+  },
+  "ROMANIA": {
+    "lat": "45.94",
+    "lon": "24.97",
+    "population": "4636262"
+  },
+  "RUSSIAN_FEDERATION": {
+    "lat": "61.52",
+    "lon": "105.32",
+    "population": "143989754"
+  },
+  "RWANDA": {
+    "lat": "-1.94",
+    "lon": "29.87",
+    "population": "12208407"
+  },
+  "SAINT_KITTS_AND_NEVIS": {
+    "lat": "17.36",
+    "lon": "-62.78",
+    "population": "55345"
+  },
+  "SAINT_LUCIA": {
+    "lat": "13.91",
+    "lon": "-60.98",
+    "population": "178844"
+  },
+  "SAINT_VINCENT_AND_GRENADINES": {
+    "lat": "12.98",
+    "lon": "-61.29",
+    "population": "109897"
+  },
+  "SAN_MARINO": {
+    "lat": "43.94",
+    "lon": "12.46",
+    "population": "33400"
+  },
+  "SAO_TOME_AND_PRINCIPE": {
+    "lat": "0.19",
+    "lon": "6.61",
+    "population": "204327"
+  },
+  "SAUDI_ARABIA": {
+    "lat": "23.89",
+    "lon": "45.08",
+    "population": "32938213"
+  },
+  "SENEGAL": {
+    "lat": "14.5",
+    "lon": "-14.45",
+    "population": "15850567"
+  },
+  "SERBIA": {
+    "lat": "44.02",
+    "lon": "21.01",
+    "population": "7111024"
+  },
+  "SEYCHELLES": {
+    "lat": "-4.68",
+    "lon": "55.49",
+    "population": "94737"
+  },
+  "SIERRA_LEONE": {
+    "lat": "8.46",
+    "lon": "-11.78",
+    "population": "7557212"
+  },
+  "SINGAPORE": {
+    "lat": "1.35",
+    "lon": "103.82",
+    "population": "5708844"
+  },
+  "SLOVAKIA": {
+    "lat": "48.67",
+    "lon": "19.7",
+    "population": "5447662"
+  },
+  "SLOVENIA": {
+    "lat": "46.15",
+    "lon": "15",
+    "population": "2079976"
+  },
+  "SOMALIA": {
+    "lat": "5.15",
+    "lon": "46.2",
+    "population": "18541980"
+  },
+  "SOUTH_AFRICA": {
+    "lat": "-30.56",
+    "lon": "22.94",
+    "population": "56717156"
+  },
+  "SOUTH_SUDAN": {
+    "lat": "7.86",
+    "lon": "29.69",
+    "population": "12575714"
+  },
+  "SPAIN": {
+    "lat": "40.46",
+    "lon": "-3.75",
+    "population": "46354321"
+  },
+  "SRI_LANKA": {
+    "lat": "7.87",
+    "lon": "80.77",
+    "population": "20876917"
+  },
+  "SUDAN": {
+    "lat": "12.86",
+    "lon": "30.22",
+    "population": "40533330"
+  },
+  "SURINAME": {
+    "lat": "3.92",
+    "lon": "-56.03",
+    "population": "563402"
+  },
+  "SWAZILAND": {
+    "lat": "-26.52",
+    "lon": "31.47",
+    "population": "1008000"
+  },
+  "SWEDEN": {
+    "lat": "60.13",
+    "lon": "18.64",
+    "population": "9910701"
+  },
+  "SWITZERLAND": {
+    "lat": "46.82",
+    "lon": "8.23",
+    "population": "8476005"
+  },
+  "SYRIAN_ARAB_REPUBLIC_(SYRIA)": {
+    "lat": "34.8",
+    "lon": "39",
+    "population": "18269868"
+  },
+  "TAIWAN__REPUBLIC_OF_CHINA": {
+    "lat": "23.7",
+    "lon": "120.96",
+    "population": "1409517397"
+  },
+  "TANZANIA__UNITED_REPUBLIC_OF": {
+    "lat": "-6.37",
+    "lon": "34.89",
+    "population": "57310019"
+  },
+  "THAILAND": {
+    "lat": "15.87",
+    "lon": "100.99",
+    "population": "69037513"
+  },
+  "TIMOR-LESTE": {
+    "lat": "-8.87",
+    "lon": "125.73",
+    "population": "1296311"
+  },
+  "TOGO": {
+    "lat": "8.62",
+    "lon": "0.82",
+    "population": "7797694"
+  },
+  "TRINIDAD_AND_TOBAGO": {
+    "lat": "10.69",
+    "lon": "-61.22",
+    "population": "1369125"
+  },
+  "TUNISIA": {
+    "lat": "33.89",
+    "lon": "9.54",
+    "population": "11532127"
+  },
+  "TURKEY": {
+    "lat": "38.96",
+    "lon": "35.24",
+    "population": "80745020"
+  },
+  "UGANDA": {
+    "lat": "1.37",
+    "lon": "32.29",
+    "population": "42862958"
+  },
+  "UKRAINE": {
+    "lat": "48.38",
+    "lon": "31.17",
+    "population": "44222947"
+  },
+  "UNITED_ARAB_EMIRATES": {
+    "lat": "23.42",
+    "lon": "53.85",
+    "population": "9400145"
+  },
+  "UNITED_KINGDOM": {
+    "lat": "51.4",
+    "lon": "0.13",
+    "population": "66181585"
+  },
+  "UNITED_STATES_OF_AMERICA": {
+    "lat": "43.33",
+    "lon": "-84.54",
+    "population": "324459463"
+  },
+  "URUGUAY": {
+    "lat": "-32.52",
+    "lon": "-55.77",
+    "population": "3456750"
+  },
+  "UZBEKISTAN": {
+    "lat": "41.38",
+    "lon": "64.59",
+    "population": "31910641"
+  },
+  "VENEZUELA_(BOLIVARIAN_REPUBLIC)": {
+    "lat": "6.42",
+    "lon": "-66.59",
+    "population": "31977065"
+  },
+  "VIET_NAM": {
+    "lat": "14.06",
+    "lon": "108.28",
+    "population": "95540800"
+  },
+  "WESTERN_SAHARA": {
+    "lat": "24.22",
+    "lon": "-12.89",
+    "population": "552628"
+  },
+  "YEMEN": {
+    "lat": "15.55",
+    "lon": "48.52",
+    "population": "28250420"
+  },
+  "ZAMBIA": {
+    "lat": "-13.13",
+    "lon": "27.85",
+    "population": "17094130"
+  },
+  "ZIMBABWE": {
+    "lat": "-19.02",
+    "lon": "29.15",
+    "population": "16529904"
+  }
+}
