@@ -1,6 +1,7 @@
 from datetime import datetime as dt
 from typing import List
 import sys
+import os
 
 import dash
 import dash_core_components as dcc
@@ -11,7 +12,7 @@ from plotly import graph_objs as go
 from plotly.graph_objs import *
 import pandas as pd
 
-sys.path.append('../..')
+sys.path.append(os.path.join("..", ".."))
 from covid_dashboard.managers.data_manager import DataManager
 
 # initialize data manager

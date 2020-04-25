@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, List
 import json
+import os
 import datetime
 
 from postman_covid19_sdk.client import APIClient
@@ -34,7 +35,7 @@ class DataManager:
         # --- end note
 
     @staticmethod
-    def load_locations(path: str = "../location_list.json") -> dict:
+    def load_locations(path: str = os.path.join("..", "location_list.json")) -> dict:
         """
         Load locations data into the memory.
 
