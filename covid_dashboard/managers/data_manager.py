@@ -68,7 +68,7 @@ class DataManager:
         Pandas DataFrame with cleaned data
         """
         data = DataFrame(data=data['Cases']).resample('D').sum()
-        return data.iloc[:-1]
+        return data
 
     @staticmethod
     def clean_data(data: 'Series') -> List[float]:
@@ -112,7 +112,8 @@ class DataManager:
                 country=self.client.Countries.__dict__[location] if location else self.client.Countries.POLAND))
             self.data_confirmed['Cases'] = self.clean_data(data=self.data_confirmed['Cases'])
             self.data_confirmed.index = self.data_confirmed.index.tz_localize(None)
-        except Exception:
+        except Exception as e:
+            print(e)
             self.data_confirmed = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
         try:
@@ -121,7 +122,8 @@ class DataManager:
                 status=StatusType.RECOVERED))
             self.data_recovered['Cases'] = self.clean_data(data=self.data_recovered['Cases'])
             self.data_recovered.index = self.data_recovered.index.tz_localize(None)
-        except Exception:
+        except Exception as e:
+            print(e)
             self.data_recovered = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
         try:
@@ -130,7 +132,8 @@ class DataManager:
                 status=StatusType.DEATHS))
             self.data_deaths['Cases'] = self.clean_data(data=self.data_deaths['Cases'])
             self.data_deaths.index = self.data_deaths.index.tz_localize(None)
-        except Exception:
+        except Exception as e:
+            print(e)
             self.data_deaths = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
     def download_data_for_location_two(self, location) -> None:
@@ -148,7 +151,8 @@ class DataManager:
                     country=self.client.Countries.__dict__[location]))
                 self.data_confirmed2['Cases'] = self.clean_data(data=self.data_confirmed2['Cases'])
                 self.data_confirmed2.index = self.data_confirmed2.index.tz_localize(None)
-            except Exception:
+            except Exception as e:
+                print(e)
                 self.data_confirmed2 = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
             try:
@@ -157,7 +161,8 @@ class DataManager:
                     status=StatusType.RECOVERED))
                 self.data_recovered2['Cases'] = self.clean_data(data=self.data_recovered2['Cases'])
                 self.data_recovered2.index = self.data_recovered2.index.tz_localize(None)
-            except Exception:
+            except Exception as e:
+                print(e)
                 self.data_recovered2 = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
             try:
@@ -166,7 +171,8 @@ class DataManager:
                     status=StatusType.DEATHS))
                 self.data_deaths2['Cases'] = self.clean_data(data=self.data_deaths2['Cases'])
                 self.data_deaths2.index = self.data_deaths2.index.tz_localize(None)
-            except Exception:
+            except Exception as e:
+                print(e)
                 self.data_deaths2 = DataFrame(columns=['Cases'], dtype=np.dtype('int32'))
 
     @staticmethod
